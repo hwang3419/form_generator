@@ -13,6 +13,8 @@ namespace WindowsFormsApplication1
     public partial class Excel_Gen : Form
     {
         public int study_type;
+        public Dictionary<string, string> sub_param_dict;
+        public Dictionary<string, Dictionary<string, string>> param_dict;
         public Excel_Gen()
         {
             InitializeComponent();
@@ -50,31 +52,27 @@ namespace WindowsFormsApplication1
             int count;
             this.table.Rows.Clear();
             this.table.Refresh();
-            this.table.Rows.Add("Compound Number", "Compound Name");
             count = Int32.Parse(this.compound.Text.ToString());
-            for (var i = 0; i < count; i++) {
-                this.table.Rows.Add(i+1, "");
+            for (int i = 1; i <=count; i++) {
+                this.table.Rows.Add("Compound"+i.ToString(),i, 1);
             }
-            this.table.Rows.Add("Time Point Number", "Time Point");
             count = Int32.Parse(this.time_point.Text.ToString());
-            for (var i = 0; i < count; i++)
-            {
-                this.table.Rows.Add(i + 1, "");
-            }
-            this.table.Rows.Add("Layer Number", "Layer Name");
+            for (int i = 1; i <= count; i++) 
+                {
+                    this.table.Rows.Add("Time Point" + i.ToString(), i , 1);
+                }
             count = Int32.Parse(this.layer.Text.ToString());
-            for (var i = 0; i < count; i++)
-            {
-                this.table.Rows.Add(i + 1, "");
-            }
-            this.table.Rows.Add("Formulation Number", "Formulation Name");
+            for (int i = 1; i <= count; i++)
+                {
+                    this.table.Rows.Add("Layer" + i.ToString(), i , 1);
+                }
             count = Int32.Parse(this.formulation.Text.ToString());
-            for (var i = 0; i < count; i++)
-            {
-                this.table.Rows.Add(i + 1, "");
-            }
+            for (int i = 1; i <= count; i++)
+                {
+                    this.table.Rows.Add("Formulation" + i.ToString(), i , 1);
+                }
 
-        }
+            }
 
         private DataGridView create_new_table_template() {
             var new_table = new DataGridView();
@@ -84,12 +82,50 @@ namespace WindowsFormsApplication1
             return new_table;
         }
 
+        private Dictionary<string, Dictionary<string, string>> load_params() {
+            var compound_dict = new Dictionary<string, string>();
+            var layer_dict = new Dictionary<string, string>();
+            var time_dict = new Dictionary<string, string>();
+            var formulation_dict = new Dictionary<string, string>();
+            var result_dict = new Dictionary<string, Dictionary<string, string>>();
+            foreach (DataGridViewRow row in this.table.Rows)
+            {
+                if (row.Cells[0].Value == null)
+                    { continue; }
+                if (row.Cells[0].Value.ToString().StartsWith("Compound")) {
+                    compound_dict[row.Cells[2].Value.ToString()] = row.Cells[1].Value.ToString();
+                }
+                else if (row.Cells[0].Value.ToString().StartsWith("Layer"))
+                {
+                    layer_dict[row.Cells[2].Value.ToString()] = row.Cells[1].Value.ToString();
+                }
+                else if (row.Cells[0].Value.ToString().StartsWith("Time"))
+                {
+                    time_dict[row.Cells[2].Value.ToString()] = row.Cells[1].Value.ToString();
+                }
+                else if (row.Cells[0].Value.ToString().StartsWith("Formulation"))
+                {
+                    formulation_dict[row.Cells[2].Value.ToString()] = row.Cells[1].Value.ToString();
+                }
+            }
+            result_dict["compound"] = compound_dict;
+            result_dict["time"] = time_dict;
+            result_dict["formulation"] = formulation_dict;
+            result_dict["layer"] = layer_dict;
+            return result_dict;
+        }
+
         private void generate_table_Click(object sender, EventArgs e)
         {
+            for (int i = 0; i < tabControl1.TabPages.Count; i++) {
+                tabControl1.TabPages.RemoveAt(i);
+            }
+            var result_dict = load_params();
+            Console.WriteLine(result_dict);
+            int label_name = 1;
             var test = create_new_table_template();
             var tab_page = new TabPage();
-            tab_page.Name = "123";
-            tab_page.Text = "123";
+            tab_page.Text = label_name.ToString();
             tab_page.Controls.Add(test);
             this.tabControl1.Controls.Add(tab_page);
             tabControl1.Refresh();
