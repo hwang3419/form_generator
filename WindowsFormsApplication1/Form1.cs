@@ -76,6 +76,25 @@ namespace WindowsFormsApplication1
 
         }
 
+        private DataGridView create_new_table_template() {
+            var new_table = new DataGridView();
+            new_table.ColumnCount = 2;
+            new_table.Columns[0].Name = "Internal Sample ID";
+            new_table.Columns[1].Name = "External Sample ID";
+            return new_table;
+        }
+
+        private void generate_table_Click(object sender, EventArgs e)
+        {
+            var test = create_new_table_template();
+            var tab_page = new TabPage();
+            tab_page.Name = "123";
+            tab_page.Text = "123";
+            tab_page.Controls.Add(test);
+            this.tabControl1.Controls.Add(tab_page);
+            tabControl1.Refresh();
+        }
+
         private void Excel_Gen_Load(object sender, EventArgs e)
         {
 
@@ -95,5 +114,7 @@ namespace WindowsFormsApplication1
         {
 
         }
+
+        
     }
 }

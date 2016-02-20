@@ -46,6 +46,8 @@
             this.table = new System.Windows.Forms.DataGridView();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.generate_table = new System.Windows.Forms.Button();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
             ((System.ComponentModel.ISupportInitialize)(this.table)).BeginInit();
             this.SuspendLayout();
             // 
@@ -155,7 +157,7 @@
             // 
             // button_start
             // 
-            this.button_start.Location = new System.Drawing.Point(19, 297);
+            this.button_start.Location = new System.Drawing.Point(124, 221);
             this.button_start.Name = "button_start";
             this.button_start.Size = new System.Drawing.Size(75, 23);
             this.button_start.TabIndex = 13;
@@ -212,11 +214,31 @@
             this.Column2.HeaderText = "c2";
             this.Column2.Name = "Column2";
             // 
+            // generate_table
+            // 
+            this.generate_table.Location = new System.Drawing.Point(246, 336);
+            this.generate_table.Name = "generate_table";
+            this.generate_table.Size = new System.Drawing.Size(544, 23);
+            this.generate_table.TabIndex = 18;
+            this.generate_table.Text = "Generate Tables";
+            this.generate_table.UseVisualStyleBackColor = true;
+            this.generate_table.Click += new System.EventHandler(this.generate_table_Click);
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Location = new System.Drawing.Point(21, 377);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(792, 287);
+            this.tabControl1.TabIndex = 19;
+            // 
             // Excel_Gen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(878, 513);
+            this.ClientSize = new System.Drawing.Size(823, 689);
+            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.generate_table);
             this.Controls.Add(this.table);
             this.Controls.Add(this.study_type_1);
             this.Controls.Add(this.study_type_2);
@@ -262,6 +284,8 @@
         private System.Windows.Forms.DataGridView table;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.Button generate_table;
+        private System.Windows.Forms.TabControl tabControl1;
     }
 }
 
