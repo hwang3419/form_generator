@@ -46,10 +46,12 @@
             this.table = new System.Windows.Forms.DataGridView();
             this.generate_table = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.table)).BeginInit();
+            this.tabControl1.SuspendLayout();
             this.SuspendLayout();
             // 
             // project_id
@@ -71,7 +73,7 @@
             // 
             // layer
             // 
-            this.layer.Location = new System.Drawing.Point(124, 113);
+            this.layer.Location = new System.Drawing.Point(122, 116);
             this.layer.Name = "layer";
             this.layer.Size = new System.Drawing.Size(100, 21);
             this.layer.TabIndex = 3;
@@ -79,7 +81,7 @@
             // 
             // formulation
             // 
-            this.formulation.Location = new System.Drawing.Point(124, 140);
+            this.formulation.Location = new System.Drawing.Point(122, 143);
             this.formulation.Name = "formulation";
             this.formulation.Size = new System.Drawing.Size(100, 21);
             this.formulation.TabIndex = 4;
@@ -87,7 +89,7 @@
             // 
             // compound
             // 
-            this.compound.Location = new System.Drawing.Point(124, 167);
+            this.compound.Location = new System.Drawing.Point(122, 170);
             this.compound.Name = "compound";
             this.compound.Size = new System.Drawing.Size(100, 21);
             this.compound.TabIndex = 5;
@@ -95,7 +97,7 @@
             // 
             // replica
             // 
-            this.replica.Location = new System.Drawing.Point(124, 194);
+            this.replica.Location = new System.Drawing.Point(122, 197);
             this.replica.Name = "replica";
             this.replica.Size = new System.Drawing.Size(100, 21);
             this.replica.TabIndex = 6;
@@ -158,7 +160,7 @@
             // 
             // button_start
             // 
-            this.button_start.Location = new System.Drawing.Point(124, 221);
+            this.button_start.Location = new System.Drawing.Point(122, 224);
             this.button_start.Name = "button_start";
             this.button_start.Size = new System.Drawing.Size(75, 23);
             this.button_start.TabIndex = 13;
@@ -218,22 +220,34 @@
             // 
             // tabControl1
             // 
+            this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Location = new System.Drawing.Point(21, 377);
+            this.tabControl1.MinimumSize = new System.Drawing.Size(800, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(792, 287);
+            this.tabControl1.Size = new System.Drawing.Size(800, 287);
             this.tabControl1.TabIndex = 19;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(792, 261);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "tabPage1";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // Column1
             // 
-            this.Column1.HeaderText = "";
+            this.Column1.HeaderText = "Name";
             this.Column1.Name = "Column1";
             // 
             // Column2
             // 
-            this.Column2.HeaderText = "Number";
+            this.Column2.HeaderText = "Index";
             this.Column2.Name = "Column2";
-            this.Column2.Width = 200;
+            this.Column2.Width = 50;
             // 
             // Column3
             // 
@@ -267,6 +281,7 @@
             this.Text = "Excel Gen";
             this.Load += new System.EventHandler(this.Excel_Gen_Load);
             ((System.ComponentModel.ISupportInitialize)(this.table)).EndInit();
+            this.tabControl1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -292,6 +307,7 @@
         private System.Windows.Forms.DataGridView table;
         private System.Windows.Forms.Button generate_table;
         private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
