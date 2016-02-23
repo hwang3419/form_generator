@@ -38,14 +38,20 @@ namespace WindowsFormsApplication1
 
         private void button1_Click_1(object sender, EventArgs e)
         {
+           
+            Console.Write(study_type);
+            Console.Write(this.layer.Text.ToString());
+            generate_param_table();
+        }
+
+        private int get_study_type()
+        {
             bool isChecked = this.study_type_1.Checked;
             if (isChecked)
                 study_type = 1;
             else
                 study_type = 2;
-            Console.Write(study_type);
-            Console.Write(this.layer.Text.ToString());
-            generate_param_table();
+            return study_type;
         }
 
         private void generate_param_table() {
@@ -64,7 +70,7 @@ namespace WindowsFormsApplication1
             count = Int32.Parse(this.layer.Text.ToString());
             for (int i = 1; i <= count; i++)
                 {
-                    this.table.Rows.Add("Layer" + i.ToString(), i , i);
+                    this.table.Rows.Add("Layer" + i.ToString(), i , "L");
                 }
             count = Int32.Parse(this.formulation.Text.ToString());
             for (int i = 1; i <= count; i++)
@@ -117,9 +123,9 @@ namespace WindowsFormsApplication1
             return result_dict;
         }
 
-        private void generate_tabs(Dictionary<string, Dictionary<string, string>>  param) {
+        private void generate_tabs_type1(Dictionary<string, Dictionary<string, string>>  param) {
             foreach (KeyValuePair<string, string> entry in param["formulation"]) {
-                var tab = generate_one_tab(param, entry);
+                var tab = generate_one_tab_type1(param, entry);
                 this.tabControl1.Controls.Add(tab);
             }
            
@@ -127,7 +133,7 @@ namespace WindowsFormsApplication1
             tabControl1.SizeMode = TabSizeMode.FillToRight;
         }
 
-        private TabPage generate_one_tab(Dictionary<string, Dictionary<string, string>> param, KeyValuePair<string, string> formulation_entry)
+        private TabPage generate_one_tab_type1(Dictionary<string, Dictionary<string, string>> param, KeyValuePair<string, string> formulation_entry)
 
         {
             var local_table = create_new_table_template();
@@ -160,10 +166,10 @@ namespace WindowsFormsApplication1
                 }
                 ex_start = ex_start + replica_int*formulation_int;
             }
-
+            ex_start = ex_factor * replica_int;
             foreach (KeyValuePair<string, string> layer_entry in param["layer"])
             {
-                inlabel = in_prefix + layer_entry.Value + layer_entry.Key;
+                inlabel = in_prefix + layer_entry.Value;
                 exlabel = ex_prefix + layer_entry.Value;
                 for (int i = 1; i <= replica_int; i++)
                 {
@@ -181,7 +187,13 @@ namespace WindowsFormsApplication1
 
             tabControl1.TabPages.Clear();
             var param_result_dict = load_params();
-            generate_tabs(param_result_dict);
+            if (get_study_type() == 1)
+            {
+                generate_tabs_type1(param_result_dict);
+            }
+            else if (get_study_type() == 2) {
+            }
+            
             int label_name = 1;
             var test = create_new_table_template();
             var tab_page = new TabPage();
