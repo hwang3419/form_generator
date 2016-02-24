@@ -44,12 +44,13 @@
             this.study_type_2 = new System.Windows.Forms.RadioButton();
             this.study_type_1 = new System.Windows.Forms.RadioButton();
             this.table = new System.Windows.Forms.DataGridView();
-            this.generate_table = new System.Windows.Forms.Button();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.generate_table = new System.Windows.Forms.Button();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.table)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.SuspendLayout();
@@ -160,7 +161,7 @@
             // 
             // button_start
             // 
-            this.button_start.Location = new System.Drawing.Point(122, 224);
+            this.button_start.Location = new System.Drawing.Point(15, 224);
             this.button_start.Name = "button_start";
             this.button_start.Size = new System.Drawing.Size(75, 23);
             this.button_start.TabIndex = 13;
@@ -201,42 +202,12 @@
             this.Column1,
             this.Column2,
             this.Column3});
-            this.table.Location = new System.Drawing.Point(246, 58);
+            this.table.Location = new System.Drawing.Point(21, 264);
             this.table.Name = "table";
             this.table.RowTemplate.Height = 23;
-            this.table.Size = new System.Drawing.Size(544, 262);
+            this.table.Size = new System.Drawing.Size(357, 461);
             this.table.TabIndex = 17;
             this.table.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.table_CellContentClick);
-            // 
-            // generate_table
-            // 
-            this.generate_table.Location = new System.Drawing.Point(246, 336);
-            this.generate_table.Name = "generate_table";
-            this.generate_table.Size = new System.Drawing.Size(544, 23);
-            this.generate_table.TabIndex = 18;
-            this.generate_table.Text = "Generate Tables";
-            this.generate_table.UseVisualStyleBackColor = true;
-            this.generate_table.Click += new System.EventHandler(this.generate_table_Click);
-            // 
-            // tabControl1
-            // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Location = new System.Drawing.Point(21, 377);
-            this.tabControl1.MinimumSize = new System.Drawing.Size(800, 0);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(800, 287);
-            this.tabControl1.TabIndex = 19;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(792, 261);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "tabPage1";
-            this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // Column1
             // 
@@ -254,11 +225,52 @@
             this.Column3.HeaderText = "value";
             this.Column3.Name = "Column3";
             // 
+            // generate_table
+            // 
+            this.generate_table.Location = new System.Drawing.Point(122, 224);
+            this.generate_table.Name = "generate_table";
+            this.generate_table.Size = new System.Drawing.Size(75, 23);
+            this.generate_table.TabIndex = 18;
+            this.generate_table.Text = "Generate Tables";
+            this.generate_table.UseVisualStyleBackColor = true;
+            this.generate_table.Click += new System.EventHandler(this.generate_table_Click);
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Location = new System.Drawing.Point(384, 12);
+            this.tabControl1.MinimumSize = new System.Drawing.Size(800, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(800, 770);
+            this.tabControl1.TabIndex = 19;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(792, 744);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "tabPage1";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(235, 224);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 20;
+            this.button1.Text = "Export Excel";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Excel_Gen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(823, 689);
+            this.ClientSize = new System.Drawing.Size(1188, 753);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.generate_table);
             this.Controls.Add(this.table);
@@ -311,6 +323,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.Button button1;
     }
 }
 

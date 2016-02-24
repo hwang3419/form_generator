@@ -6,7 +6,12 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
+using Microsoft;
+using Excel = Microsoft.Office.Interop.Excel;
+
+using System.Runtime.InteropServices;
 
 namespace WindowsFormsApplication1
 {
@@ -15,6 +20,7 @@ namespace WindowsFormsApplication1
         public int study_type;
         public Dictionary<string, string> sub_param_dict;
         public Dictionary<string, Dictionary<string, string>> param_dict;
+        public Dictionary<string, DataGridView> output_dict;
         public Excel_Gen()
         {
             InitializeComponent();
@@ -22,25 +28,22 @@ namespace WindowsFormsApplication1
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            
+
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
 
-            
+
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-            
+
         }
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-           
-            Console.Write(study_type);
-            Console.Write(this.layer.Text.ToString());
             generate_param_table();
         }
 
@@ -54,33 +57,36 @@ namespace WindowsFormsApplication1
             return study_type;
         }
 
-        private void generate_param_table() {
+        private void generate_param_table()
+        {
             int count;
             this.table.Rows.Clear();
             this.table.Refresh();
             count = Int32.Parse(this.compound.Text.ToString());
-            for (int i = 1; i <=count; i++) {
-                this.table.Rows.Add("Compound"+i.ToString(),i, i);
+            for (int i = 1; i <= count; i++)
+            {
+                this.table.Rows.Add("Compound" + i.ToString(), i, i);
             }
             count = Int32.Parse(this.time_point.Text.ToString());
-            for (int i = 1; i <= count; i++) 
-                {
-                    this.table.Rows.Add("Time Point" + i.ToString(), i , i);
-                }
+            for (int i = 1; i <= count; i++)
+            {
+                this.table.Rows.Add("Time Point" + i.ToString(), i, i);
+            }
             count = Int32.Parse(this.layer.Text.ToString());
             for (int i = 1; i <= count; i++)
-                {
-                    this.table.Rows.Add("Layer" + i.ToString(), i , "L");
-                }
+            {
+                this.table.Rows.Add("Layer" + i.ToString(), i, "L");
+            }
             count = Int32.Parse(this.formulation.Text.ToString());
             for (int i = 1; i <= count; i++)
-                {
-                    this.table.Rows.Add("Formulation" + i.ToString(), i , i);
-                }
-
+            {
+                this.table.Rows.Add("Formulation" + i.ToString(), i, i);
             }
 
-        private DataGridView create_new_table_template() {
+        }
+
+        private DataGridView create_new_table_template()
+        {
             var new_table = new DataGridView();
             new_table.ColumnCount = 2;
             new_table.Columns[0].Name = "Internal Sample ID";
@@ -90,7 +96,8 @@ namespace WindowsFormsApplication1
             return new_table;
         }
 
-        private Dictionary<string, Dictionary<string, string>> load_params() {
+        private Dictionary<string, Dictionary<string, string>> load_params()
+        {
             var compound_dict = new Dictionary<string, string>();
             var layer_dict = new Dictionary<string, string>();
             var time_dict = new Dictionary<string, string>();
@@ -99,8 +106,9 @@ namespace WindowsFormsApplication1
             foreach (DataGridViewRow row in this.table.Rows)
             {
                 if (row.Cells[0].Value == null)
-                    { continue; }
-                if (row.Cells[0].Value.ToString().StartsWith("Compound")) {
+                { continue; }
+                if (row.Cells[0].Value.ToString().StartsWith("Compound"))
+                {
                     compound_dict[row.Cells[1].Value.ToString()] = row.Cells[2].Value.ToString();
                 }
                 else if (row.Cells[0].Value.ToString().StartsWith("Layer"))
@@ -123,12 +131,14 @@ namespace WindowsFormsApplication1
             return result_dict;
         }
 
-        private void generate_tabs_type1(Dictionary<string, Dictionary<string, string>>  param) {
-            foreach (KeyValuePair<string, string> entry in param["formulation"]) {
+        private void generate_tabs_type1(Dictionary<string, Dictionary<string, string>> param)
+        {
+            foreach (KeyValuePair<string, string> entry in param["formulation"])
+            {
                 var tab = generate_one_tab_type1(param, entry);
                 this.tabControl1.Controls.Add(tab);
             }
-           
+
             tabControl1.Refresh();
             tabControl1.SizeMode = TabSizeMode.FillToRight;
         }
@@ -137,34 +147,36 @@ namespace WindowsFormsApplication1
 
         {
             var local_table = create_new_table_template();
-            var local_tabpage = new TabPage(); 
+            var local_tabpage = new TabPage();
             int replica_int = Int32.Parse(replica.Text.ToString());
             int formulation_int = Int32.Parse(formulation.Text.ToString());
             string inlabel;
             string exlabel;
-            string in_prefix = project_id.Text + "F"+ formulation_entry.Key;
+            string in_prefix = project_id.Text + "F" + formulation_entry.Key;
             string ex_prefix = project_id.Text;
             int ex_factor = Int32.Parse(formulation_entry.Key) - 1;
             int ex_start = ex_factor * replica_int;
-            int ex_count =0;
-            local_tabpage.Width = 800;
-            local_table.Width = 1000;
+            int ex_count = 0;
+            local_tabpage.Width = 700;
+            local_tabpage.Height = 700;
+            local_table.Height = 700;
+            local_table.Width = 700;
             local_tabpage.Text = "Formulation" + formulation_entry.Key;
 
-           
+
             foreach (KeyValuePair<string, string> time_entry in param["time"])
             {
-                inlabel = in_prefix +"R"+time_entry.Value;
+                inlabel = in_prefix + "R" + time_entry.Value;
                 exlabel = ex_prefix + "R";
                 int time_key = Int32.Parse(time_entry.Key);
-                
-                for (int i=1;i<= replica_int;i++)
+
+                for (int i = 1; i <= replica_int; i++)
                 {
-                    ex_count =  i+ ex_start;
+                    ex_count = i + ex_start;
                     local_table.Rows.Add(inlabel + "-" + i, exlabel + ex_count.ToString());
-                    
+
                 }
-                ex_start = ex_start + replica_int*formulation_int;
+                ex_start = ex_start + replica_int * formulation_int;
             }
             ex_start = ex_factor * replica_int;
             foreach (KeyValuePair<string, string> layer_entry in param["layer"])
@@ -178,7 +190,79 @@ namespace WindowsFormsApplication1
                 }
                 ex_start = ex_start + replica_int * formulation_int;
             }
-                local_tabpage.Controls.Add(local_table);
+            output_dict[local_tabpage.Text] = local_table;
+            local_tabpage.Controls.Add(local_table);
+            return local_tabpage;
+        }
+
+        private void generate_tabs_type2(Dictionary<string, Dictionary<string, string>> param)
+        {
+            foreach (KeyValuePair<string, string> entry in param["formulation"])
+            {
+                var tab = generate_one_tab_type2(param, entry);
+                this.tabControl1.Controls.Add(tab);
+            }
+
+            tabControl1.Refresh();
+            tabControl1.SizeMode = TabSizeMode.FillToRight;
+        }
+
+        private TabPage generate_one_tab_type2(Dictionary<string, Dictionary<string, string>> param, KeyValuePair<string, string> formulation_entry)
+        {
+            var local_table = create_new_table_template();
+            var local_tabpage = new TabPage();
+            int replica_int = Int32.Parse(replica.Text.ToString());
+            int time_int = Int32.Parse(time_point.Text.ToString());
+            int formulation_int = Int32.Parse(formulation.Text.ToString());
+            string inlabel;
+            string exlabel;
+            string in_prefix = project_id.Text + "F" + formulation_entry.Key;
+            string ex_prefix = project_id.Text;
+            int ex_factor = Int32.Parse(formulation_entry.Key) - 1;
+            int ex_start = ex_factor * replica_int;
+            int ex_count = 0;
+            local_tabpage.Width = 700;
+            local_tabpage.Height = 700;
+            local_table.Height = 700;
+            local_table.Width = 700;
+            local_tabpage.Text = "Formulation" + formulation_entry.Key;
+
+
+            foreach (KeyValuePair<string, string> time_entry in param["time"])
+            {
+                inlabel = in_prefix + "R" + time_entry.Value;
+                exlabel = ex_prefix + "R";
+                int time_key = Int32.Parse(time_entry.Key);
+
+                for (int i = 1; i <= replica_int; i++)
+                {
+                    ex_count = i + ex_start;
+                    local_table.Rows.Add(inlabel + "-" + i, exlabel + ex_count.ToString());
+
+                }
+                ex_start = ex_start + replica_int * formulation_int;
+            }
+            ex_start = ex_factor * replica_int * time_int;
+            foreach (KeyValuePair<string, string> layer_entry in param["layer"])
+            {
+                inlabel = in_prefix + layer_entry.Value;
+                exlabel = ex_prefix + layer_entry.Value;
+                for (int i = 1; i <= replica_int; i++)
+                {
+                    for (int j = 1; j <= time_int; j++)
+                    {
+                        ex_start += 1;
+                        ex_count = ex_start;
+                        local_table.Rows.Add(inlabel + "-" + j.ToString() + "-" + i, exlabel + ex_count.ToString());
+                    }
+
+                }
+                ex_start = ex_start + replica_int * time_int * formulation_int;
+            }
+
+            output_dict[local_tabpage.Text] = local_table;
+            local_tabpage.Controls.Add(local_table);
+            local_table.AutoResizeRows();
             return local_tabpage;
         }
 
@@ -186,20 +270,39 @@ namespace WindowsFormsApplication1
         {
 
             tabControl1.TabPages.Clear();
+            output_dict = new Dictionary<string, DataGridView>();
             var param_result_dict = load_params();
             if (get_study_type() == 1)
             {
                 generate_tabs_type1(param_result_dict);
             }
-            else if (get_study_type() == 2) {
+            else if (get_study_type() == 2)
+            {
+                generate_tabs_type2(param_result_dict);
             }
-            
-            int label_name = 1;
-            var test = create_new_table_template();
-            var tab_page = new TabPage();
-            tab_page.Text = label_name.ToString();
-            tab_page.Controls.Add(test);
-            
+
+            //int label_name = 1;
+            //var test = create_new_table_template();
+            //var tab_page = new TabPage();
+            //tab_page.Text = label_name.ToString();
+            //tab_page.Controls.Add(test);
+
+        }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+
+            Microsoft.Office.Interop.Excel.Application xlexcel;
+            Microsoft.Office.Interop.Excel.Workbook xlWorkBook;
+            Microsoft.Office.Interop.Excel.Worksheet xlWorkSheet;
+            object misValue = System.Reflection.Missing.Value;
+            xlexcel = new Excel.Application();
+            xlexcel.Visible = true;
+            xlWorkBook = xlexcel.Workbooks.Add(misValue);
+            xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+            Excel.Range CR = (Excel.Range)xlWorkSheet.Cells[1, 1];
+            CR.Select();
+            xlWorkSheet.PasteSpecial(CR, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, true);
         }
 
         private void Excel_Gen_Load(object sender, EventArgs e)
@@ -222,6 +325,98 @@ namespace WindowsFormsApplication1
 
         }
 
-        
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Excel Documents (*.xls)|*.xls";
+            sfd.FileName = "Inventory_Adjustment_Export.xls";
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                // Copy DataGridView results to clipboard
+                object misValue = System.Reflection.Missing.Value;
+                Excel.Application xlexcel = new Excel.Application();
+
+                xlexcel.DisplayAlerts = false; // Without this you will get two confirm overwrite prompts
+                Excel.Workbook xlWorkBook = xlexcel.Workbooks.Add(misValue);
+                Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+                int count = 1;
+                
+                var collection = new Microsoft.Office.Interop.Excel.Worksheet[output_dict.LongCount()+2];
+
+                foreach (KeyValuePair<string,DataGridView> entry in output_dict)
+                {
+                    copyAlltoClipboard(entry.Value);
+
+
+
+                    // xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(count);
+                    collection[count] = xlexcel.Worksheets.Add();
+                    collection[count].Name = entry.Key;
+                    xlWorkSheet = collection[count];
+                    // Paste clipboard results to worksheet range
+                    Excel.Range CR = (Excel.Range)xlWorkSheet.Cells[1, 1];
+                    CR.Select();
+                    xlWorkSheet.PasteSpecial(CR, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, true);
+                    // For some reason column A is always blank in the worksheet. ¯\_(ツ)_/¯
+                    // Delete blank column A and select cell A1
+                    Excel.Range delRng = xlWorkSheet.get_Range("A:A").Cells;
+                    delRng.Delete(Type.Missing);
+                    xlWorkSheet.get_Range("A1").Select();
+                    count += 1;
+                   //break;
+
+                }
+                
+
+                
+
+                // Save the excel file under the captured location from the SaveFileDialog
+                xlWorkBook.SaveAs(sfd.FileName, Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
+                xlexcel.DisplayAlerts = true;
+                xlWorkBook.Close(true, misValue, misValue);
+                xlexcel.Quit();
+
+                releaseObject(xlWorkSheet);
+                releaseObject(xlWorkBook);
+                releaseObject(xlexcel);
+
+                // Clear Clipboard and DataGridView selection
+                Clipboard.Clear();
+                //dgvItems.ClearSelection();
+
+                // Open the newly saved excel file
+                if (File.Exists(sfd.FileName))
+                    System.Diagnostics.Process.Start(sfd.FileName);
+            }
+
+        }
+        private void copyAlltoClipboard(DataGridView d)
+        {
+            d.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText;
+            d.MultiSelect = true;
+            d.SelectAll();
+            DataObject dataObj = d.GetClipboardContent();
+            if (dataObj != null)
+                Clipboard.SetDataObject(dataObj);
+        }
+
+        private void releaseObject(object obj)
+        {
+            try
+            {
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(obj);
+                obj = null;
+            }
+            catch (Exception ex)
+            {
+                obj = null;
+                MessageBox.Show("Exception Occurred while releasing object " + ex.ToString());
+            }
+            finally
+            {
+                GC.Collect();
+            }
+        }
+
     }
 }
