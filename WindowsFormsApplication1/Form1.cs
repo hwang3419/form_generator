@@ -10,7 +10,7 @@ using System.IO;
 using System.Windows.Forms;
 using Microsoft;
 using Excel = Microsoft.Office.Interop.Excel;
-
+using System.Data.OleDb;
 using System.Runtime.InteropServices;
 
 namespace WindowsFormsApplication1
@@ -85,14 +85,20 @@ namespace WindowsFormsApplication1
 
         }
 
-        private DataGridView create_new_table_template()
+        private DataGridView create_new_table_template(Dictionary<string, string> compound_dict)
         {
             var new_table = new DataGridView();
-            new_table.ColumnCount = 2;
+            new_table.ColumnCount = 2 + (int) compound_dict.LongCount();
             new_table.Columns[0].Name = "Internal Sample ID";
             new_table.Columns[0].Width = 200;
             new_table.Columns[1].Name = "External Sample ID";
             new_table.Columns[1].Width = 200;
+            int column_index = 2;
+            foreach(KeyValuePair<string,string> kv in compound_dict)
+            {
+                new_table.Columns[column_index].Name = kv.Value;
+                column_index += 1;
+            }
             return new_table;
         }
 
@@ -146,7 +152,7 @@ namespace WindowsFormsApplication1
         private TabPage generate_one_tab_type1(Dictionary<string, Dictionary<string, string>> param, KeyValuePair<string, string> formulation_entry)
 
         {
-            var local_table = create_new_table_template();
+            var local_table = create_new_table_template(param["compound"]);
             var local_tabpage = new TabPage();
             int replica_int = Int32.Parse(replica.Text.ToString());
             int formulation_int = Int32.Parse(formulation.Text.ToString());
@@ -209,7 +215,7 @@ namespace WindowsFormsApplication1
 
         private TabPage generate_one_tab_type2(Dictionary<string, Dictionary<string, string>> param, KeyValuePair<string, string> formulation_entry)
         {
-            var local_table = create_new_table_template();
+            var local_table = create_new_table_template(param["compound"]);
             var local_tabpage = new TabPage();
             int replica_int = Int32.Parse(replica.Text.ToString());
             int time_int = Int32.Parse(time_point.Text.ToString());
@@ -329,7 +335,7 @@ namespace WindowsFormsApplication1
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "Excel Documents (*.xls)|*.xls";
-            sfd.FileName = "Inventory_Adjustment_Export.xls";
+            sfd.FileName = "report.xls";
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 // Copy DataGridView results to clipboard
@@ -417,6 +423,56 @@ namespace WindowsFormsApplication1
                 GC.Collect();
             }
         }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openfile1 = new OpenFileDialog();
+            if (openfile1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string filename = openfile1.InitialDirectory + openfile1.FileName;
+                ReadXls(filename, 1);
+            }
+        }
+
+        public static Array ReadXls(string filename, int index)
+        {
+           
+            Microsoft.Office.Interop.Excel.Application xls = new Microsoft.Office.Interop.Excel.Application();
+            object Missing = System.Reflection.Missing.Value;
+            Excel.Workbook book = xls.Workbooks.Open(filename, Missing, Missing, Missing, Missing, Missing, Missing, Missing, Missing, Missing, Missing, Missing, Missing, Missing, Missing);
+
+            Excel.Worksheet sheet;//
+            xls.Visible = false;//
+            xls.DisplayAlerts = false;//
+
+            try
+            {
+                sheet = (Excel.Worksheet)book.Worksheets.get_Item(index);
+            }
+            catch (Exception ex)//
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+            Console.WriteLine(sheet.Name);
+            int row = sheet.UsedRange.Rows.Count;
+            int col = sheet.UsedRange.Columns.Count;
+            Excel.Range c1 = sheet.Cells[1, 1];
+            Excel.Range c2 = sheet.Cells[4, 4];
+            Excel.Range value = (Excel.Range)sheet.get_Range(c1,c2);
+            var a = value.Value2;
+            Console.WriteLine(a);
+            book.Save();//
+            book.Close(false, Missing, Missing);//
+            xls.Quit();//
+
+            sheet = null;
+            book = null;
+            xls = null;
+            GC.Collect();
+            return null;
+        }
+
 
     }
 }
