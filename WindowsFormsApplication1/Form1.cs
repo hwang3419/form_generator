@@ -184,11 +184,12 @@ namespace WindowsFormsApplication1
                 }
                 ex_start = ex_start + replica_int * formulation_int;
             }
-            ex_start = ex_factor * replica_int;
+            
             foreach (KeyValuePair<string, string> layer_entry in param["layer"])
             {
                 inlabel = in_prefix + layer_entry.Value;
                 exlabel = ex_prefix + layer_entry.Value;
+                ex_start = ex_factor * replica_int;
                 for (int i = 1; i <= replica_int; i++)
                 {
                     ex_count = i + ex_start;
@@ -248,18 +249,19 @@ namespace WindowsFormsApplication1
                 }
                 ex_start = ex_start + replica_int * formulation_int;
             }
-            ex_start = ex_factor * replica_int * time_int;
+           
             foreach (KeyValuePair<string, string> layer_entry in param["layer"])
             {
                 inlabel = in_prefix + layer_entry.Value;
                 exlabel = ex_prefix + layer_entry.Value;
+                ex_start = ex_factor * replica_int * time_int;
                 for (int i = 1; i <= replica_int; i++)
                 {
                     for (int j = 1; j <= time_int; j++)
                     {
                         ex_start += 1;
                         ex_count = ex_start;
-                        local_table.Rows.Add(inlabel + "-" + j.ToString() + "-" + i, exlabel + ex_count.ToString());
+                        local_table.Rows.Add(inlabel + "-" + i.ToString() + "-" + i, exlabel + ex_count.ToString());
                     }
 
                 }
