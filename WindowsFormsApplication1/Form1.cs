@@ -12,6 +12,7 @@ using Microsoft;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Data.OleDb;
 using System.Runtime.InteropServices;
+using System.Collections;
 
 namespace WindowsFormsApplication1
 {
@@ -219,6 +220,7 @@ namespace WindowsFormsApplication1
             var local_table = create_new_table_template(param["compound"]);
             var local_tabpage = new TabPage();
             int replica_int = Int32.Parse(replica.Text.ToString());
+            int compound_int = Int32.Parse(compound.Text.ToString());
             int time_int = Int32.Parse(time_point.Text.ToString());
             int formulation_int = Int32.Parse(formulation.Text.ToString());
             string inlabel;
@@ -234,7 +236,7 @@ namespace WindowsFormsApplication1
             local_table.Width = 700;
             local_tabpage.Text = "Formulation" + formulation_entry.Key;
 
-
+            
             foreach (KeyValuePair<string, string> time_entry in param["time"])
             {
                 inlabel = in_prefix + "R" + time_entry.Value;
@@ -255,13 +257,13 @@ namespace WindowsFormsApplication1
                 inlabel = in_prefix + layer_entry.Value;
                 exlabel = ex_prefix + layer_entry.Value;
                 ex_start = ex_factor * replica_int * time_int;
-                for (int i = 1; i <= replica_int; i++)
+                for (int i = 1; i <= time_int; i++)
                 {
-                    for (int j = 1; j <= time_int; j++)
+                    for (int j = 1; j <= replica_int; j++)
                     {
                         ex_start += 1;
                         ex_count = ex_start;
-                        local_table.Rows.Add(inlabel + "-" + i.ToString() + "-" + i, exlabel + ex_count.ToString());
+                        local_table.Rows.Add(inlabel + "-" + i.ToString() + "-" + j, exlabel + ex_count.ToString());
                     }
 
                 }
@@ -436,7 +438,7 @@ namespace WindowsFormsApplication1
             }
         }
 
-        public static Array ReadXls(string filename, int index)
+        public static List<List<string>> ReadXls(string filename, int index)
         {
            
             Microsoft.Office.Interop.Excel.Application xls = new Microsoft.Office.Interop.Excel.Application();
@@ -460,10 +462,22 @@ namespace WindowsFormsApplication1
             int row = sheet.UsedRange.Rows.Count;
             int col = sheet.UsedRange.Columns.Count;
             Excel.Range c1 = sheet.Cells[1, 1];
-            Excel.Range c2 = sheet.Cells[4, 4];
-            Excel.Range value = (Excel.Range)sheet.get_Range(c1,c2);
-            var a = value.Value2;
-            Console.WriteLine(a);
+            Excel.Range c2 = sheet.Cells[row, col];
+            var v = (Excel.Range)sheet.get_Range(c1,c2);
+            var value = v.Value2;
+            int count = 0;
+            List<string> new_row = new List<string>();
+            List<List<string>> result = new List<List<string>>();
+            foreach (var item in value)
+            {
+                new_row.Add(item.ToString());
+                count += 1;
+                if (count% col == 0)
+                {
+                    result.Add(new_row);
+                    new_row = new List<string>();
+                }
+            }
             book.Save();//
             book.Close(false, Missing, Missing);//
             xls.Quit();//
@@ -472,7 +486,7 @@ namespace WindowsFormsApplication1
             book = null;
             xls = null;
             GC.Collect();
-            return null;
+            return result;
         }
 
 
