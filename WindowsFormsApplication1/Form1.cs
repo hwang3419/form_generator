@@ -255,19 +255,20 @@ namespace WindowsFormsApplication1
             foreach (KeyValuePair<string, string> layer_entry in param["layer"])
             {
                 inlabel = in_prefix + layer_entry.Value;
-                exlabel = ex_prefix + layer_entry.Value;
-                ex_start = ex_factor * replica_int * time_int;
-                for (int i = 1; i <= time_int; i++)
+                
+                
+                foreach (KeyValuePair<string, string> time_entry in param["time"])
                 {
+                    exlabel = ex_prefix + layer_entry.Value;
                     for (int j = 1; j <= replica_int; j++)
                     {
                         ex_start += 1;
                         ex_count = ex_start;
-                        local_table.Rows.Add(inlabel + "-" + i.ToString() + "-" + j, exlabel + ex_count.ToString());
+                        local_table.Rows.Add(inlabel + "-" + time_entry.Value + "-" + j, exlabel + ex_count.ToString());
                     }
-
+                    ex_start = ex_start + replica_int * formulation_int;
                 }
-                ex_start = ex_start + replica_int * time_int * formulation_int;
+                
             }
 
             output_dict[local_tabpage.Text] = local_table;
