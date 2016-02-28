@@ -19,9 +19,11 @@ namespace WindowsFormsApplication1
     public partial class Excel_Gen : Form
     {
         public int study_type;
+        public Dictionary<string, List<List<string>>> load_dict;
         public Dictionary<string, string> sub_param_dict;
         public Dictionary<string, Dictionary<string, string>> param_dict;
         public Dictionary<string, DataGridView> output_dict;
+       
         public Excel_Gen()
         {
             InitializeComponent();
@@ -66,22 +68,22 @@ namespace WindowsFormsApplication1
             count = Int32.Parse(this.compound.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Compound" + i.ToString(), i, i);
+                this.table.Rows.Add("Compound" + i.ToString(), i, i, 1);
             }
             count = Int32.Parse(this.time_point.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Time Point" + i.ToString(), i, i);
+                this.table.Rows.Add("Time Point" + i.ToString(), i, i * 2, 1);
             }
             count = Int32.Parse(this.layer.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Layer" + i.ToString(), i, "L");
+                this.table.Rows.Add("Layer" + i.ToString(), i, "L", 1);
             }
             count = Int32.Parse(this.formulation.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Formulation" + i.ToString(), i, i);
+                this.table.Rows.Add("Formulation" + i.ToString(), i, i, 1);
             }
 
         }
@@ -89,13 +91,13 @@ namespace WindowsFormsApplication1
         private DataGridView create_new_table_template(Dictionary<string, string> compound_dict)
         {
             var new_table = new DataGridView();
-            new_table.ColumnCount = 2 + (int) compound_dict.LongCount();
+            new_table.ColumnCount = 2 + (int)compound_dict.LongCount();
             new_table.Columns[0].Name = "Internal Sample ID";
             new_table.Columns[0].Width = 200;
             new_table.Columns[1].Name = "External Sample ID";
             new_table.Columns[1].Width = 200;
             int column_index = 2;
-            foreach(KeyValuePair<string,string> kv in compound_dict)
+            foreach (KeyValuePair<string, string> kv in compound_dict)
             {
                 new_table.Columns[column_index].Name = kv.Value;
                 column_index += 1;
@@ -185,7 +187,7 @@ namespace WindowsFormsApplication1
                 }
                 ex_start = ex_start + replica_int * formulation_int;
             }
-            
+
             foreach (KeyValuePair<string, string> layer_entry in param["layer"])
             {
                 inlabel = in_prefix + layer_entry.Value;
@@ -236,7 +238,7 @@ namespace WindowsFormsApplication1
             local_table.Width = 700;
             local_tabpage.Text = "Formulation" + formulation_entry.Key;
 
-            
+
             foreach (KeyValuePair<string, string> time_entry in param["time"])
             {
                 inlabel = in_prefix + "R" + time_entry.Value;
@@ -251,12 +253,12 @@ namespace WindowsFormsApplication1
                 }
                 ex_start = ex_start + replica_int * formulation_int;
             }
-           
+
             foreach (KeyValuePair<string, string> layer_entry in param["layer"])
             {
                 inlabel = in_prefix + layer_entry.Value;
-                
-                
+
+
                 foreach (KeyValuePair<string, string> time_entry in param["time"])
                 {
                     exlabel = ex_prefix + layer_entry.Value;
@@ -268,7 +270,7 @@ namespace WindowsFormsApplication1
                     }
                     ex_start = ex_start + replica_int * formulation_int;
                 }
-                
+
             }
 
             output_dict[local_tabpage.Text] = local_table;
@@ -351,16 +353,31 @@ namespace WindowsFormsApplication1
                 Excel.Workbook xlWorkBook = xlexcel.Workbooks.Add(misValue);
                 Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
                 int count = 1;
-                
-                var collection = new Microsoft.Office.Interop.Excel.Worksheet[output_dict.LongCount()+2];
 
-                foreach (KeyValuePair<string,DataGridView> entry in output_dict)
+                var collection = new Microsoft.Office.Interop.Excel.Worksheet[output_dict.LongCount() + 3];
+                // save param table
+                if (true)
+                {
+                    copyAlltoClipboard(this.table);
+                    collection[count] = xlexcel.Worksheets.Add();
+                    collection[count].Name = "Do not touch!";
+                    xlWorkSheet = collection[count];
+                    // Paste clipboard results to worksheet range
+                    Excel.Range CR = (Excel.Range)xlWorkSheet.Cells[1, 1];
+                    CR.Select();
+                    xlWorkSheet.PasteSpecial(CR, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, true);
+                    // For some reason column A is always blank in the worksheet. ¯\_(ツ)_/¯
+                    // Delete blank column A and select cell A1
+                    Excel.Range delRng = xlWorkSheet.get_Range("A:A").Cells;
+                    delRng.Delete(Type.Missing);
+                    xlWorkSheet.get_Range("A1").Select();
+                }
+
+
+
+                foreach (KeyValuePair<string, DataGridView> entry in output_dict)
                 {
                     copyAlltoClipboard(entry.Value);
-
-
-
-                    // xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(count);
                     collection[count] = xlexcel.Worksheets.Add();
                     collection[count].Name = entry.Key;
                     xlWorkSheet = collection[count];
@@ -374,12 +391,10 @@ namespace WindowsFormsApplication1
                     delRng.Delete(Type.Missing);
                     xlWorkSheet.get_Range("A1").Select();
                     count += 1;
-                   //break;
-
                 }
-                
 
-                
+
+
 
                 // Save the excel file under the captured location from the SaveFileDialog
                 xlWorkBook.SaveAs(sfd.FileName, Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
@@ -435,49 +450,81 @@ namespace WindowsFormsApplication1
             if (openfile1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string filename = openfile1.InitialDirectory + openfile1.FileName;
-                ReadXls(filename, 1);
+                ReadXls(filename);
             }
+
         }
 
-        public static List<List<string>> ReadXls(string filename, int index)
+        public  void ReadXls(string filename)
         {
-           
+
             Microsoft.Office.Interop.Excel.Application xls = new Microsoft.Office.Interop.Excel.Application();
+            load_dict = new Dictionary<string, List<List<string>>>();
             object Missing = System.Reflection.Missing.Value;
+            int sheet_index;
             Excel.Workbook book = xls.Workbooks.Open(filename, Missing, Missing, Missing, Missing, Missing, Missing, Missing, Missing, Missing, Missing, Missing, Missing, Missing, Missing);
 
             Excel.Worksheet sheet;//
             xls.Visible = false;//
             xls.DisplayAlerts = false;//
-
-            try
+            sheet_index = 1;
+            
+            while (true)
             {
-                sheet = (Excel.Worksheet)book.Worksheets.get_Item(index);
-            }
-            catch (Exception ex)//
-            {
-                Console.WriteLine(ex.Message);
-                return null;
-            }
-            Console.WriteLine(sheet.Name);
-            int row = sheet.UsedRange.Rows.Count;
-            int col = sheet.UsedRange.Columns.Count;
-            Excel.Range c1 = sheet.Cells[1, 1];
-            Excel.Range c2 = sheet.Cells[row, col];
-            var v = (Excel.Range)sheet.get_Range(c1,c2);
-            var value = v.Value2;
-            int count = 0;
-            List<string> new_row = new List<string>();
-            List<List<string>> result = new List<List<string>>();
-            foreach (var item in value)
-            {
-                new_row.Add(item.ToString());
-                count += 1;
-                if (count% col == 0)
+                try
                 {
-                    result.Add(new_row);
-                    new_row = new List<string>();
+                    if (book == null)
+                    {
+                        break;
+                    }
+                    sheet = (Excel.Worksheet)book.Worksheets.get_Item(sheet_index);
+                   
                 }
+                catch (Exception ex)//
+                {
+                    Console.WriteLine(ex.ToString());
+                    Console.WriteLine();
+                    Console.WriteLine("Press any key to continue");
+                    Console.ReadLine();
+                    break;
+
+                }
+                int row = sheet.UsedRange.Rows.Count;
+                int col = sheet.UsedRange.Columns.Count;
+                string sheet_name = sheet.Name;
+                Excel.Range c1 = sheet.Cells[1, 1];
+                Excel.Range c2 = sheet.Cells[row, col];
+                var v = (Excel.Range)sheet.get_Range(c1, c2);
+                var value = v.Value2;
+                if (value == null)
+                {
+                    break;
+                }
+                int count = 0;
+                List<string> new_row = new List<string>();
+                List<List<string>> current_sheet = new List<List<string>>();
+                foreach (var item in value)
+                {
+                    if (item == null)
+                    {
+                        new_row.Add("0");
+                    }
+                    else
+                    {
+                        new_row.Add(item.ToString());
+                    }
+
+                    count += 1;
+                    if (count % col == 0)
+                    {
+                        current_sheet.Add(new_row);
+                        new_row = new List<string>();
+                    }
+                }
+                load_dict[sheet_name] = current_sheet;
+                
+                sheet_index += 1;
+
             }
             book.Save();//
             book.Close(false, Missing, Missing);//
@@ -487,7 +534,7 @@ namespace WindowsFormsApplication1
             book = null;
             xls = null;
             GC.Collect();
-            return result;
+
         }
 
 

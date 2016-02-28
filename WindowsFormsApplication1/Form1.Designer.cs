@@ -44,13 +44,14 @@
             this.study_type_2 = new System.Windows.Forms.RadioButton();
             this.study_type_1 = new System.Windows.Forms.RadioButton();
             this.table = new System.Windows.Forms.DataGridView();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.generate_table = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.button1 = new System.Windows.Forms.Button();
             this.button_load = new System.Windows.Forms.Button();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.volume = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.table)).BeginInit();
             this.SuspendLayout();
             // 
@@ -200,29 +201,14 @@
             this.table.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
             this.Column2,
-            this.Column3});
+            this.Column3,
+            this.volume});
             this.table.Location = new System.Drawing.Point(21, 264);
             this.table.Name = "table";
             this.table.RowTemplate.Height = 23;
-            this.table.Size = new System.Drawing.Size(357, 461);
+            this.table.Size = new System.Drawing.Size(366, 461);
             this.table.TabIndex = 17;
             this.table.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.table_CellContentClick);
-            // 
-            // Column1
-            // 
-            this.Column1.HeaderText = "Name";
-            this.Column1.Name = "Column1";
-            // 
-            // Column2
-            // 
-            this.Column2.HeaderText = "Index";
-            this.Column2.Name = "Column2";
-            this.Column2.Width = 50;
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "value";
-            this.Column3.Name = "Column3";
             // 
             // generate_table
             // 
@@ -247,21 +233,42 @@
             // 
             this.button1.Location = new System.Drawing.Point(227, 235);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(123, 23);
             this.button1.TabIndex = 20;
-            this.button1.Text = "Export Excel";
+            this.button1.Text = "Export Label";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button_load
             // 
-            this.button_load.Location = new System.Drawing.Point(246, 21);
+            this.button_load.Location = new System.Drawing.Point(229, 21);
             this.button_load.Name = "button_load";
-            this.button_load.Size = new System.Drawing.Size(75, 23);
+            this.button_load.Size = new System.Drawing.Size(121, 23);
             this.button_load.TabIndex = 21;
-            this.button_load.Text = "Load";
+            this.button_load.Text = "Load Input";
             this.button_load.UseVisualStyleBackColor = true;
             this.button_load.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // Column1
+            // 
+            this.Column1.HeaderText = "Name";
+            this.Column1.Name = "Column1";
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "Index";
+            this.Column2.Name = "Column2";
+            this.Column2.Width = 50;
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "value";
+            this.Column3.Name = "Column3";
+            // 
+            // volume
+            // 
+            this.volume.HeaderText = "Volume";
+            this.volume.Name = "volume";
             // 
             // Excel_Gen
             // 
@@ -317,11 +324,12 @@
         private System.Windows.Forms.DataGridView table;
         private System.Windows.Forms.Button generate_table;
         private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button_load;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button_load;
+        private System.Windows.Forms.DataGridViewTextBoxColumn volume;
     }
 }
 
