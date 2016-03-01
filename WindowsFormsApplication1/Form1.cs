@@ -23,7 +23,7 @@ namespace WindowsFormsApplication1
         public Dictionary<string, string> sub_param_dict;
         public Dictionary<string, Dictionary<string, string>> param_dict;
         public Dictionary<string, DataGridView> output_dict;
-       
+
         public Excel_Gen()
         {
             InitializeComponent();
@@ -85,6 +85,9 @@ namespace WindowsFormsApplication1
             {
                 this.table.Rows.Add("Formulation" + i.ToString(), i, i, 1);
             }
+            this.table.Rows.Add("Project ID", project_id.Text.ToString());
+            this.table.Rows.Add("replica", replica.Text.ToString());
+            this.table.Rows.Add("study_type", get_study_type());
 
         }
 
@@ -112,6 +115,7 @@ namespace WindowsFormsApplication1
             var time_dict = new Dictionary<string, string>();
             var formulation_dict = new Dictionary<string, string>();
             var result_dict = new Dictionary<string, Dictionary<string, string>>();
+            var extra_dict = new Dictionary<string, string>();
             foreach (DataGridViewRow row in this.table.Rows)
             {
                 if (row.Cells[0].Value == null)
@@ -132,11 +136,24 @@ namespace WindowsFormsApplication1
                 {
                     formulation_dict[row.Cells[1].Value.ToString()] = row.Cells[2].Value.ToString();
                 }
+                else if (row.Cells[0].Value.ToString().StartsWith("Project"))
+                {
+                    extra_dict["project_id"] = row.Cells[1].Value.ToString();
+                }
+                else if (row.Cells[0].Value.ToString().StartsWith("replica"))
+                {
+                    extra_dict["replica"] = row.Cells[1].Value.ToString();
+                }
+                else if (row.Cells[0].Value.ToString().StartsWith("study"))
+                {
+                    extra_dict["studytype"] = row.Cells[1].Value.ToString();
+                }
             }
             result_dict["compound"] = compound_dict;
             result_dict["time"] = time_dict;
             result_dict["formulation"] = formulation_dict;
             result_dict["layer"] = layer_dict;
+            result_dict["extra"] = extra_dict;
             return result_dict;
         }
 
@@ -278,6 +295,185 @@ namespace WindowsFormsApplication1
             local_table.AutoResizeRows();
             return local_tabpage;
         }
+        private DataGridView create_report_table_template()
+        {
+            var new_table = new DataGridView();
+            new_table.Height = 700;
+            new_table.Width = 700;
+            int replica_int = Int32.Parse(param_dict["extra"]["replica"]);
+            new_table.ColumnCount = 1 + replica_int;
+            new_table.Columns[0].Name = " ";
+            new_table.Columns[0].Width = 200;
+            for (int i = 1; i <= replica_int; i++)
+            {
+                new_table.Columns[i].Name = "Run " + i.ToString();
+
+            }
+
+            return new_table;
+        }
+
+
+        private void generate_report_tab_type1(List<List<string>> sheet, string sheet_key)
+        {
+            tabControl1.TabPages.Clear();
+            string formulation_id = sheet_key.Remove(0, 11);
+            var local_table = create_report_table_template();
+            var local_tabpage = new TabPage();
+            local_tabpage.Height = 700;
+            local_tabpage.Width = 700;
+            List<string> row_data;
+            string c_label = "Default Null";
+            row_data = new List<string>();
+            Dictionary<string, Dictionary<string, string>> query_sheet = new Dictionary<string, Dictionary<string, string>>();
+            Dictionary<string, int> index_table = new Dictionary<string, int>();
+            foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
+            {
+                query_sheet[c_dict.Value] = new Dictionary<string, string>();
+                index_table[c_dict.Value] = sheet[0].IndexOf(c_dict.Value);
+            }
+
+
+            foreach (List<string> row in sheet)
+            {
+                if (row[0].Contains("Internal Sample"))
+                {
+                    continue;
+                }
+                foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
+                {
+                    query_sheet[c_dict.Value].Add(row[0], row[index_table[c_dict.Value]]);
+                }
+
+
+
+            }
+
+            foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
+            {
+                local_table.Rows.Add(c_dict.Value);
+                foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
+                {
+                    c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + "R" + r_dict.Value;
+                    row_data = new List<string>();
+                    row_data.Add("receptor R" + r_dict.Value + " hr");
+                    for (int i = 1; i <= Int32.Parse(param_dict["extra"]["replica"]); i++)
+                    {
+
+                        string id_label = c_label + "-" + i.ToString();
+                        row_data.Add(query_sheet[c_dict.Value][id_label]);
+
+                    }
+
+                    local_table.Rows.Add(row_data.ToArray());
+                }
+
+                foreach (KeyValuePair<string, string> l_dict in param_dict["layer"])
+                {
+                    c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + l_dict.Value;
+                    row_data = new List<string>();
+                    row_data.Add(l_dict.Value + " at  24hr");
+                    for (int i = 1; i <= Int32.Parse(param_dict["extra"]["replica"]); i++)
+                    {
+
+                        string id_label = c_label + "-" + i.ToString();
+                        row_data.Add(query_sheet[c_dict.Value][id_label]);
+
+                    }
+
+                    local_table.Rows.Add(row_data.ToArray());
+                }
+            }
+
+
+            local_tabpage.Controls.Add(local_table);
+            tabControl1.TabPages.Add(local_tabpage);
+            tabControl1.Refresh();
+            tabControl1.SizeMode = TabSizeMode.FillToRight;
+        }
+
+
+        private void generate_report_tab_type2(List<List<string>> sheet, string sheet_key)
+        {
+            tabControl1.TabPages.Clear();
+            string formulation_id = sheet_key.Remove(0, 11);
+            var local_table = create_report_table_template();
+            var local_tabpage = new TabPage();
+            local_tabpage.Height = 700;
+            local_tabpage.Width = 700;
+            List<string> row_data;
+            string c_label = "Default Null";
+            row_data = new List<string>();
+            Dictionary<string, Dictionary<string, string>> query_sheet = new Dictionary<string, Dictionary<string, string>>();
+            Dictionary<string, int> index_table = new Dictionary<string, int>();
+            foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
+            {
+                query_sheet[c_dict.Value] = new Dictionary<string, string>();
+                index_table[c_dict.Value] = sheet[0].IndexOf(c_dict.Value);
+            }
+
+
+            foreach (List<string> row in sheet)
+            {
+                if (row[0].Contains("Internal Sample"))
+                {
+                    continue;
+                }
+                foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
+                {
+                    query_sheet[c_dict.Value].Add(row[0], row[index_table[c_dict.Value]]);
+                }
+            }
+
+            foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
+            {
+                local_table.Rows.Add(c_dict.Value);
+                foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
+                {
+                    c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + "R" + r_dict.Value;
+                    row_data = new List<string>();
+                    row_data.Add("receptor R" + r_dict.Value + " hr");
+                    for (int i = 1; i <= Int32.Parse(param_dict["extra"]["replica"]); i++)
+                    {
+
+                        string id_label = c_label + "-" + i.ToString();
+                        row_data.Add(query_sheet[c_dict.Value][id_label]);
+
+                    }
+
+                    local_table.Rows.Add(row_data.ToArray());
+                }
+
+                foreach (KeyValuePair<string, string> t_dict in param_dict["time"])
+                {
+                    foreach (KeyValuePair<string, string> l_dict in param_dict["layer"])
+                    {
+                        c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + l_dict.Value + "-" + t_dict.Value;
+                        row_data = new List<string>();
+                        row_data.Add(l_dict.Value + " at  "+ t_dict.Value.ToString() +"hr");
+                        for (int i = 1; i <= Int32.Parse(param_dict["extra"]["replica"]); i++)
+                        {
+
+                            string id_label = c_label + "-" + i.ToString();
+                            row_data.Add(query_sheet[c_dict.Value][id_label]);
+
+                        }
+
+                        local_table.Rows.Add(row_data.ToArray());
+                    }
+                }
+
+            }
+
+
+            local_tabpage.Controls.Add(local_table);
+            tabControl1.TabPages.Add(local_tabpage);
+            tabControl1.Refresh();
+            tabControl1.SizeMode = TabSizeMode.FillToRight;
+        }
+
+
+
 
         private void generate_table_Click(object sender, EventArgs e)
         {
@@ -399,20 +595,23 @@ namespace WindowsFormsApplication1
                 // Save the excel file under the captured location from the SaveFileDialog
                 xlWorkBook.SaveAs(sfd.FileName, Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
                 xlexcel.DisplayAlerts = true;
-                xlWorkBook.Close(true, misValue, misValue);
+                xlWorkBook.Close(false, misValue, misValue);
                 xlexcel.Quit();
-
-                releaseObject(xlWorkSheet);
-                releaseObject(xlWorkBook);
-                releaseObject(xlexcel);
+                xlWorkSheet = null;
+                xlWorkBook = null;
+                xlexcel = null;
+                //reaseObject(xlWorkSheet);
+                //releaseObject(xlWorkBook);
+                //releaseObject(xlexcel);
 
                 // Clear Clipboard and DataGridView selection
                 Clipboard.Clear();
+                GC.Collect();
                 //dgvItems.ClearSelection();
 
                 // Open the newly saved excel file
-                if (File.Exists(sfd.FileName))
-                    System.Diagnostics.Process.Start(sfd.FileName);
+                //if (File.Exists(sfd.FileName))
+                // System.Diagnostics.Process.Start(sfd.FileName);
             }
 
         }
@@ -451,11 +650,60 @@ namespace WindowsFormsApplication1
             {
                 string filename = openfile1.InitialDirectory + openfile1.FileName;
                 ReadXls(filename);
+                render_param_table();
+                param_dict = load_params();
+                if(param_dict["extra"]["studytype"] == "1")
+                {
+                    study_type = 1;
+                    this.study_type_1.Checked = true;
+                }
+                else if(param_dict["extra"]["studytype"] == "2"){
+                    study_type = 2;
+                    this.study_type_2.Checked = true;
+                }
+
+                create_report_table();
             }
+
 
         }
 
-        public  void ReadXls(string filename)
+        private void create_report_table()
+        {
+
+            foreach (KeyValuePair<string, List<List<string>>> sheet in load_dict)
+            {
+                if (sheet.Key == "Do not touch!")
+                {
+                    continue;
+                }
+                if(study_type == 1)
+                {
+                    generate_report_tab_type1(sheet.Value, sheet.Key);
+                }else if(study_type == 2)
+                {
+                    generate_report_tab_type2(sheet.Value, sheet.Key);
+                }
+                
+            }
+        }
+
+
+        private void render_param_table()
+        {
+            this.table.Rows.Clear();
+            List<List<string>> param_list = load_dict["Do not touch!"];
+            foreach (List<string> row in param_list)
+            {
+                if (row[1] == "Index")
+                {
+                    continue;
+                }
+                this.table.Rows.Add(row[0], row[1], row[2], row[3]);
+            }
+        }
+
+        public void ReadXls(string filename)
         {
 
             Microsoft.Office.Interop.Excel.Application xls = new Microsoft.Office.Interop.Excel.Application();
@@ -468,7 +716,7 @@ namespace WindowsFormsApplication1
             xls.Visible = false;//
             xls.DisplayAlerts = false;//
             sheet_index = 1;
-            
+
             while (true)
             {
                 try
@@ -478,7 +726,7 @@ namespace WindowsFormsApplication1
                         break;
                     }
                     sheet = (Excel.Worksheet)book.Worksheets.get_Item(sheet_index);
-                   
+
                 }
                 catch (Exception ex)//
                 {
@@ -522,7 +770,7 @@ namespace WindowsFormsApplication1
                     }
                 }
                 load_dict[sheet_name] = current_sheet;
-                
+
                 sheet_index += 1;
 
             }
