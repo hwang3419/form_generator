@@ -13,6 +13,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 using System.Data.OleDb;
 using System.Runtime.InteropServices;
 using System.Collections;
+using System.Globalization;
 
 namespace WindowsFormsApplication1
 {
@@ -23,7 +24,8 @@ namespace WindowsFormsApplication1
         public Dictionary<string, string> sub_param_dict;
         public Dictionary<string, Dictionary<string, string>> param_dict;
         public Dictionary<string, DataGridView> output_dict;
-
+        public Dictionary<string, float> layer_volume_dict;
+        public Dictionary<string, float> receptor_volume_dict;
         public Excel_Gen()
         {
             InitializeComponent();
@@ -116,6 +118,8 @@ namespace WindowsFormsApplication1
             var formulation_dict = new Dictionary<string, string>();
             var result_dict = new Dictionary<string, Dictionary<string, string>>();
             var extra_dict = new Dictionary<string, string>();
+            layer_volume_dict = new Dictionary<string, float>() ;
+            receptor_volume_dict = new Dictionary<string, float>();
             foreach (DataGridViewRow row in this.table.Rows)
             {
                 if (row.Cells[0].Value == null)
@@ -127,10 +131,12 @@ namespace WindowsFormsApplication1
                 else if (row.Cells[0].Value.ToString().StartsWith("Layer"))
                 {
                     layer_dict[row.Cells[1].Value.ToString()] = row.Cells[2].Value.ToString();
+                    layer_volume_dict[row.Cells[1].Value.ToString()] = float.Parse(row.Cells[3].Value.ToString(), CultureInfo.InvariantCulture.NumberFormat);
                 }
                 else if (row.Cells[0].Value.ToString().StartsWith("Time"))
                 {
                     time_dict[row.Cells[1].Value.ToString()] = row.Cells[2].Value.ToString();
+                    receptor_volume_dict[row.Cells[1].Value.ToString()] = float.Parse(row.Cells[3].Value.ToString(), CultureInfo.InvariantCulture.NumberFormat);
                 }
                 else if (row.Cells[0].Value.ToString().StartsWith("Formulation"))
                 {
@@ -271,11 +277,13 @@ namespace WindowsFormsApplication1
                 ex_start = ex_start + replica_int * formulation_int;
             }
 
+
+            ex_start = ex_factor * replica_int;
             foreach (KeyValuePair<string, string> layer_entry in param["layer"])
             {
                 inlabel = in_prefix + layer_entry.Value;
 
-
+                
                 foreach (KeyValuePair<string, string> time_entry in param["time"])
                 {
                     exlabel = ex_prefix + layer_entry.Value;
@@ -285,8 +293,9 @@ namespace WindowsFormsApplication1
                         ex_count = ex_start;
                         local_table.Rows.Add(inlabel + "-" + time_entry.Value + "-" + j, exlabel + ex_count.ToString());
                     }
-                    ex_start = ex_start + replica_int * formulation_int;
+                    ex_start = ex_start + replica_int * (formulation_int-1);
                 }
+                
 
             }
 
@@ -322,6 +331,7 @@ namespace WindowsFormsApplication1
             var local_tabpage = new TabPage();
             local_tabpage.Height = 700;
             local_tabpage.Width = 700;
+            float local_volume;
             List<string> row_data;
             string c_label = "Default Null";
             row_data = new List<string>();
@@ -354,6 +364,7 @@ namespace WindowsFormsApplication1
                 local_table.Rows.Add(c_dict.Value);
                 foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
                 {
+                    local_volume = receptor_volume_dict[r_dict.Key];
                     c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + "R" + r_dict.Value;
                     row_data = new List<string>();
                     row_data.Add("receptor R" + r_dict.Value + " hr");
@@ -361,7 +372,8 @@ namespace WindowsFormsApplication1
                     {
 
                         string id_label = c_label + "-" + i.ToString();
-                        row_data.Add(query_sheet[c_dict.Value][id_label]);
+                        float temp = float.Parse(query_sheet[c_dict.Value][id_label], CultureInfo.InvariantCulture.NumberFormat);
+                        row_data.Add((temp * local_volume).ToString());
 
                     }
 
@@ -375,9 +387,10 @@ namespace WindowsFormsApplication1
                     row_data.Add(l_dict.Value + " at  24hr");
                     for (int i = 1; i <= Int32.Parse(param_dict["extra"]["replica"]); i++)
                     {
-
+                        local_volume = layer_volume_dict[l_dict.Key];
                         string id_label = c_label + "-" + i.ToString();
-                        row_data.Add(query_sheet[c_dict.Value][id_label]);
+                        float temp = float.Parse(query_sheet[c_dict.Value][id_label], CultureInfo.InvariantCulture.NumberFormat);
+                        row_data.Add((temp * local_volume).ToString());
 
                     }
 
@@ -401,6 +414,7 @@ namespace WindowsFormsApplication1
             var local_tabpage = new TabPage();
             local_tabpage.Height = 700;
             local_tabpage.Width = 700;
+            float local_volume;
             List<string> row_data;
             string c_label = "Default Null";
             row_data = new List<string>();
@@ -430,6 +444,7 @@ namespace WindowsFormsApplication1
                 local_table.Rows.Add(c_dict.Value);
                 foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
                 {
+                    local_volume = receptor_volume_dict[r_dict.Key];
                     c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + "R" + r_dict.Value;
                     row_data = new List<string>();
                     row_data.Add("receptor R" + r_dict.Value + " hr");
@@ -437,7 +452,8 @@ namespace WindowsFormsApplication1
                     {
 
                         string id_label = c_label + "-" + i.ToString();
-                        row_data.Add(query_sheet[c_dict.Value][id_label]);
+                        float temp = float.Parse(query_sheet[c_dict.Value][id_label], CultureInfo.InvariantCulture.NumberFormat);
+                        row_data.Add((temp * local_volume).ToString());
 
                     }
 
@@ -448,6 +464,7 @@ namespace WindowsFormsApplication1
                 {
                     foreach (KeyValuePair<string, string> l_dict in param_dict["layer"])
                     {
+                        local_volume = layer_volume_dict[l_dict.Key];
                         c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + l_dict.Value + "-" + t_dict.Value;
                         row_data = new List<string>();
                         row_data.Add(l_dict.Value + " at  "+ t_dict.Value.ToString() +"hr");
@@ -455,7 +472,8 @@ namespace WindowsFormsApplication1
                         {
 
                             string id_label = c_label + "-" + i.ToString();
-                            row_data.Add(query_sheet[c_dict.Value][id_label]);
+                            float temp = float.Parse(query_sheet[c_dict.Value][id_label], CultureInfo.InvariantCulture.NumberFormat);
+                            row_data.Add((temp * local_volume).ToString());
 
                         }
 

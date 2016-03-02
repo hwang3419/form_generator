@@ -44,14 +44,14 @@
             this.study_type_2 = new System.Windows.Forms.RadioButton();
             this.study_type_1 = new System.Windows.Forms.RadioButton();
             this.table = new System.Windows.Forms.DataGridView();
-            this.generate_table = new System.Windows.Forms.Button();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button_load = new System.Windows.Forms.Button();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.volume = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.generate_table = new System.Windows.Forms.Button();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button_load = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.table)).BeginInit();
             this.SuspendLayout();
             // 
@@ -163,9 +163,9 @@
             // 
             this.button_start.Location = new System.Drawing.Point(19, 235);
             this.button_start.Name = "button_start";
-            this.button_start.Size = new System.Drawing.Size(75, 23);
+            this.button_start.Size = new System.Drawing.Size(103, 23);
             this.button_start.TabIndex = 13;
-            this.button_start.Text = "start";
+            this.button_start.Text = "Generate Params";
             this.button_start.UseVisualStyleBackColor = true;
             this.button_start.Click += new System.EventHandler(this.button1_Click_1);
             // 
@@ -210,45 +210,6 @@
             this.table.TabIndex = 17;
             this.table.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.table_CellContentClick);
             // 
-            // generate_table
-            // 
-            this.generate_table.Location = new System.Drawing.Point(122, 235);
-            this.generate_table.Name = "generate_table";
-            this.generate_table.Size = new System.Drawing.Size(75, 23);
-            this.generate_table.TabIndex = 18;
-            this.generate_table.Text = "Generate Tables";
-            this.generate_table.UseVisualStyleBackColor = true;
-            this.generate_table.Click += new System.EventHandler(this.generate_table_Click);
-            // 
-            // tabControl1
-            // 
-            this.tabControl1.Location = new System.Drawing.Point(384, 12);
-            this.tabControl1.MinimumSize = new System.Drawing.Size(800, 0);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(800, 770);
-            this.tabControl1.TabIndex = 19;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(227, 235);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(123, 23);
-            this.button1.TabIndex = 20;
-            this.button1.Text = "Export Label";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button_load
-            // 
-            this.button_load.Location = new System.Drawing.Point(229, 21);
-            this.button_load.Name = "button_load";
-            this.button_load.Size = new System.Drawing.Size(121, 23);
-            this.button_load.TabIndex = 21;
-            this.button_load.Text = "Load Input";
-            this.button_load.UseVisualStyleBackColor = true;
-            this.button_load.Click += new System.EventHandler(this.button2_Click);
-            // 
             // Column1
             // 
             this.Column1.HeaderText = "Name";
@@ -269,6 +230,45 @@
             // 
             this.volume.HeaderText = "Volume";
             this.volume.Name = "volume";
+            // 
+            // generate_table
+            // 
+            this.generate_table.Location = new System.Drawing.Point(128, 235);
+            this.generate_table.Name = "generate_table";
+            this.generate_table.Size = new System.Drawing.Size(104, 23);
+            this.generate_table.TabIndex = 18;
+            this.generate_table.Text = "Generate Labels";
+            this.generate_table.UseVisualStyleBackColor = true;
+            this.generate_table.Click += new System.EventHandler(this.generate_table_Click);
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Location = new System.Drawing.Point(384, 12);
+            this.tabControl1.MinimumSize = new System.Drawing.Size(800, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(800, 770);
+            this.tabControl1.TabIndex = 19;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(238, 235);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(112, 23);
+            this.button1.TabIndex = 20;
+            this.button1.Text = "Export Label";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button_load
+            // 
+            this.button_load.Location = new System.Drawing.Point(229, 21);
+            this.button_load.Name = "button_load";
+            this.button_load.Size = new System.Drawing.Size(121, 23);
+            this.button_load.TabIndex = 21;
+            this.button_load.Text = "Load Input";
+            this.button_load.UseVisualStyleBackColor = true;
+            this.button_load.Click += new System.EventHandler(this.button2_Click);
             // 
             // Excel_Gen
             // 
