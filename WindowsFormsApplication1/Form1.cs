@@ -26,6 +26,7 @@ namespace WindowsFormsApplication1
         public Dictionary<string, DataGridView> output_dict;
         public Dictionary<string, float> layer_volume_dict;
         public Dictionary<string, float> receptor_volume_dict;
+        public DataGridView output_report_table;
         public Excel_Gen()
         {
             InitializeComponent();
@@ -406,7 +407,7 @@ namespace WindowsFormsApplication1
                 }
             }
 
-
+            output_report_table = local_table;
             local_tabpage.Controls.Add(local_table);
             tabControl1.TabPages.Add(local_tabpage);
             tabControl1.Refresh();
@@ -491,7 +492,7 @@ namespace WindowsFormsApplication1
 
             }
 
-
+            output_report_table = local_table;
             local_tabpage.Controls.Add(local_table);
             tabControl1.TabPages.Add(local_tabpage);
             tabControl1.Refresh();
@@ -811,6 +812,50 @@ namespace WindowsFormsApplication1
 
         }
 
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Excel Documents (*.xls)|*.xls";
+            sfd.FileName = "report.xls";
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                // Copy DataGridView results to clipboard
+                object misValue = System.Reflection.Missing.Value;
+                Excel.Application xlexcel = new Excel.Application();
 
+                xlexcel.DisplayAlerts = false; // Without this you will get two confirm overwrite prompts
+                Excel.Workbook xlWorkBook = xlexcel.Workbooks.Add(misValue);
+                Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+                int count = 1;
+
+                var collection = new Microsoft.Office.Interop.Excel.Worksheet[2];
+                // save param table
+                if (true)
+                {
+                    copyAlltoClipboard(this.output_report_table);
+                    collection[count] = xlexcel.Worksheets.Add();
+                    collection[count].Name = "Report";
+                    xlWorkSheet = collection[count];
+                    // Paste clipboard results to worksheet range
+                    Excel.Range CR = (Excel.Range)xlWorkSheet.Cells[1, 1];
+                    CR.Select();
+                    xlWorkSheet.PasteSpecial(CR, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, true);
+                    // For some reason column A is always blank in the worksheet. ¯\_(ツ)_/¯
+                    // Delete blank column A and select cell A1
+                    Excel.Range delRng = xlWorkSheet.get_Range("A:A").Cells;
+                    delRng.Delete(Type.Missing);
+                    xlWorkSheet.get_Range("A1").Select();
+                }
+                xlWorkBook.SaveAs(sfd.FileName, Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
+                xlexcel.DisplayAlerts = true;
+                xlWorkBook.Close(false, misValue, misValue);
+                xlexcel.Quit();
+                xlWorkSheet = null;
+                xlWorkBook = null;
+                xlexcel = null;
+                Clipboard.Clear();
+                GC.Collect();
+            }
+        }
     }
 }
