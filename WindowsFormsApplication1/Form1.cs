@@ -278,12 +278,12 @@ namespace WindowsFormsApplication1
             }
 
 
-            ex_start = ex_factor * replica_int;
+            
             foreach (KeyValuePair<string, string> layer_entry in param["layer"])
             {
                 inlabel = in_prefix + layer_entry.Value;
 
-                
+                ex_start = ex_factor * replica_int;
                 foreach (KeyValuePair<string, string> time_entry in param["time"])
                 {
                     exlabel = ex_prefix + layer_entry.Value;
