@@ -29,6 +29,14 @@ namespace WindowsFormsApplication1
         public Excel_Gen()
         {
             InitializeComponent();
+            TimeSpan t = DateTime.UtcNow - new DateTime(1970, 1, 1);
+            int secondsSinceEpoch = (int)t.TotalSeconds;
+            if (secondsSinceEpoch  > 1464927194)// jun 3rd
+            {
+                this.button_load.Enabled = false;
+                Application.Exit();
+            }           
+
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
