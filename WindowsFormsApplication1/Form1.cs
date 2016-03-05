@@ -32,11 +32,11 @@ namespace WindowsFormsApplication1
             InitializeComponent();
             TimeSpan t = DateTime.UtcNow - new DateTime(1970, 1, 1);
             int secondsSinceEpoch = (int)t.TotalSeconds;
-            if (secondsSinceEpoch  > 1464927194)// jun 3rd
+            if (secondsSinceEpoch > 1464927194)// jun 3rd
             {
                 this.button_load.Enabled = false;
                 Application.Exit();
-            }           
+            }
 
         }
 
@@ -127,7 +127,7 @@ namespace WindowsFormsApplication1
             var formulation_dict = new Dictionary<string, string>();
             var result_dict = new Dictionary<string, Dictionary<string, string>>();
             var extra_dict = new Dictionary<string, string>();
-            layer_volume_dict = new Dictionary<string, float>() ;
+            layer_volume_dict = new Dictionary<string, float>();
             receptor_volume_dict = new Dictionary<string, float>();
             foreach (DataGridViewRow row in this.table.Rows)
             {
@@ -287,7 +287,7 @@ namespace WindowsFormsApplication1
             }
 
 
-            
+
             foreach (KeyValuePair<string, string> layer_entry in param["layer"])
             {
                 inlabel = in_prefix + layer_entry.Value;
@@ -302,9 +302,9 @@ namespace WindowsFormsApplication1
                         ex_count = ex_start;
                         local_table.Rows.Add(inlabel + "-" + time_entry.Value + "-" + j, exlabel + ex_count.ToString());
                     }
-                    ex_start = ex_start + replica_int * (formulation_int-1);
+                    ex_start = ex_start + replica_int * (formulation_int - 1);
                 }
-                
+
 
             }
 
@@ -313,22 +313,67 @@ namespace WindowsFormsApplication1
             local_table.AutoResizeRows();
             return local_tabpage;
         }
+        private List<string> get_report_header()
+        {
+            List<string> header = new List<string>();
+            header.Add("");
+            int replica_int = Int32.Parse(param_dict["extra"]["replica"]);
+            for (int i = 1; i <= replica_int; i++)
+            {
+                header.Add("Run  #" + i.ToString() + " (ng)");
+
+            }
+            header.Add("");
+            header.Add("Average");
+            header.Add("STD");
+            header.Add("STD/AVG");
+            return header;
+        }
+
         private DataGridView create_report_table_template()
         {
             var new_table = new DataGridView();
             new_table.Height = 700;
             new_table.Width = 700;
             int replica_int = Int32.Parse(param_dict["extra"]["replica"]);
-            new_table.ColumnCount = 1 + replica_int;
+            new_table.ColumnCount = 1 + replica_int + 4;
             new_table.Columns[0].Name = " ";
             new_table.Columns[0].Width = 200;
-            for (int i = 1; i <= replica_int; i++)
-            {
-                new_table.Columns[i].Name = "Run " + i.ToString();
+            new_table.Rows.Add("Project Name");
 
-            }
+           
+            new_table.Rows.Add(get_report_header().ToArray());
 
             return new_table;
+        }
+
+        private float stofloat(string param)
+        {
+            return float.Parse(param, CultureInfo.InvariantCulture.NumberFormat);
+        }
+
+        private List<string> append_data(List<string> data)
+        {
+            float sum = 0;
+            double stdsum = 0;
+            double std;
+            float avg;
+            long length = data.LongCount() - 1;
+            for (int i = 1; i < data.LongCount(); i++)
+            {
+                sum += stofloat(data[i]);
+            }
+            avg = sum / (length);
+            for (int i = 1; i < data.LongCount(); i++)
+            {
+                stdsum += Math.Pow(stofloat(data[i])-avg,2);
+            }
+            std = Math.Pow(stdsum / length, 0.5);
+            data.Add("");
+            data.Add(avg.ToString());
+            data.Add(std.ToString());
+            data.Add((std / avg).ToString());
+            return data;
         }
 
 
@@ -345,6 +390,7 @@ namespace WindowsFormsApplication1
             string c_label = "Default Null";
             row_data = new List<string>();
             Dictionary<string, Dictionary<string, string>> query_sheet = new Dictionary<string, Dictionary<string, string>>();
+            query_sheet.Clear();
             Dictionary<string, int> index_table = new Dictionary<string, int>();
             foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
             {
@@ -367,7 +413,7 @@ namespace WindowsFormsApplication1
 
 
             }
-
+            List <string> last_row_data = new List<string>();
             foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
             {
                 local_table.Rows.Add(c_dict.Value);
@@ -385,7 +431,19 @@ namespace WindowsFormsApplication1
                         row_data.Add((temp * local_volume).ToString());
 
                     }
-
+                    if(last_row_data.LongCount() == 0)
+                    {
+                        last_row_data = row_data.ToList();
+                    }
+                    else
+                    {
+                        for(int i = 1; i < last_row_data.LongCount(); i++)
+                        {
+                            row_data[i] = (stofloat(row_data[i]) + stofloat(last_row_data[i])).ToString();
+                        }
+                        last_row_data = row_data.ToList();
+                    }
+                    row_data = append_data(row_data);
                     local_table.Rows.Add(row_data.ToArray());
                 }
 
@@ -402,7 +460,7 @@ namespace WindowsFormsApplication1
                         row_data.Add((temp * local_volume).ToString());
 
                     }
-
+                    row_data = append_data(row_data);
                     local_table.Rows.Add(row_data.ToArray());
                 }
             }
@@ -428,6 +486,7 @@ namespace WindowsFormsApplication1
             string c_label = "Default Null";
             row_data = new List<string>();
             Dictionary<string, Dictionary<string, string>> query_sheet = new Dictionary<string, Dictionary<string, string>>();
+            query_sheet.Clear();
             Dictionary<string, int> index_table = new Dictionary<string, int>();
             foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
             {
@@ -465,18 +524,16 @@ namespace WindowsFormsApplication1
                         row_data.Add((temp * local_volume).ToString());
 
                     }
-
+                    row_data = append_data(row_data);
                     local_table.Rows.Add(row_data.ToArray());
-                }
 
-                foreach (KeyValuePair<string, string> t_dict in param_dict["time"])
-                {
+
                     foreach (KeyValuePair<string, string> l_dict in param_dict["layer"])
                     {
                         local_volume = layer_volume_dict[l_dict.Key];
-                        c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + l_dict.Value + "-" + t_dict.Value;
+                        c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + l_dict.Value + "-" + r_dict.Value;
                         row_data = new List<string>();
-                        row_data.Add(l_dict.Value + " at  "+ t_dict.Value.ToString() +"hr");
+                        row_data.Add(l_dict.Value + " at  " + r_dict.Value.ToString() + "hr");
                         for (int i = 1; i <= Int32.Parse(param_dict["extra"]["replica"]); i++)
                         {
 
@@ -485,10 +542,15 @@ namespace WindowsFormsApplication1
                             row_data.Add((temp * local_volume).ToString());
 
                         }
-
+                        row_data = append_data(row_data);
                         local_table.Rows.Add(row_data.ToArray());
                     }
                 }
+
+                //foreach (KeyValuePair<string, string> t_dict in param_dict["time"])
+                //{
+
+                //}
 
             }
 
