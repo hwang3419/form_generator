@@ -316,7 +316,7 @@ namespace WindowsFormsApplication1
         private List<string> get_report_header()
         {
             List<string> header = new List<string>();
-            header.Add("");
+            header.Add("Collection Point");
             int replica_int = Int32.Parse(param_dict["extra"]["replica"]);
             for (int i = 1; i <= replica_int; i++)
             {
@@ -339,11 +339,43 @@ namespace WindowsFormsApplication1
             new_table.ColumnCount = 1 + replica_int + 4;
             new_table.Columns[0].Name = " ";
             new_table.Columns[0].Width = 200;
-            new_table.Rows.Add("Project Name");
+            new_table.Rows.Add("Project Name:");
+            new_table.Rows.Add("Prepared By:");
+            new_table.Rows.Add("Project No.");
+            new_table.Rows.Add("For");
+            new_table.Rows.Add("Date");
+            new_table.Rows.Add("");
+            new_table.Rows.Add("Tissue diffusion area (cm2):");
+            List<string> api_list = new List<string>();
+            api_list.Add("API");
+            foreach (KeyValuePair<string,string> kv in param_dict["compound"])
+            {
+                api_list.Add(kv.Value);
+            }
+            new_table.Rows.Add(api_list.ToArray());
+            new_table.Rows.Add("", "", "API Concentration", " Dosed Amount / g", "Dosed Amount for Each Cell/ mg", " Applied Amount of API / mg");
+            new_table.Rows.Add(" ");
+            new_table.Rows.Add("Formulation");
+            new_table.Rows.Add("Tissue No.");
+            new_table.Rows.Add("Age/Race/Gender");
+            new_table.Rows.Add("Thickness/mm");
+            api_list = new List<string>();
+            List<string> value_list = new List<string>();
+            api_list.Add("Time point");
+            value_list.Add("Replicate");
+            foreach (KeyValuePair<string, string> kv in param_dict["time"])
+            {
+                api_list.Add("Time Point #"+kv.Key.ToString());
+                value_list.Add(kv.Value);
+            }
+            new_table.Rows.Add(api_list.ToArray());
+            new_table.Rows.Add(value_list.ToArray());
+            new_table.Rows.Add("Note:");
+            new_table.Rows.Add(" ");
 
-           
+
             new_table.Rows.Add(get_report_header().ToArray());
-
+            new_table.Rows.Add("Skin Tissue Information");
             return new_table;
         }
 
@@ -366,7 +398,7 @@ namespace WindowsFormsApplication1
             avg = sum / (length);
             for (int i = 1; i < data.LongCount(); i++)
             {
-                stdsum += Math.Pow(stofloat(data[i])-avg,2);
+                stdsum += Math.Pow(stofloat(data[i]) - avg, 2);
             }
             std = Math.Pow(stdsum / length, 0.5);
             data.Add("");
@@ -379,12 +411,18 @@ namespace WindowsFormsApplication1
 
         private void generate_report_tab_type1(List<List<string>> sheet, string sheet_key)
         {
-            tabControl1.TabPages.Clear();
+
             string formulation_id = sheet_key.Remove(0, 11);
-            var local_table = create_report_table_template();
-            var local_tabpage = new TabPage();
-            local_tabpage.Height = 700;
-            local_tabpage.Width = 700;
+            DataGridView local_table;
+            if (output_report_table.RowCount < 1)
+            {
+                local_table = create_report_table_template();
+            }
+            else
+            {
+                local_table = output_report_table;
+            }
+
             float local_volume;
             List<string> row_data;
             string c_label = "Default Null";
@@ -413,10 +451,12 @@ namespace WindowsFormsApplication1
 
 
             }
-            List <string> last_row_data = new List<string>();
+            List<string> last_row_data = new List<string>();
             foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
             {
                 local_table.Rows.Add(c_dict.Value);
+                local_table.Rows.Add("API");
+                local_table.Rows.Add("Formulation Name");
                 foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
                 {
                     local_volume = receptor_volume_dict[r_dict.Key];
@@ -431,13 +471,13 @@ namespace WindowsFormsApplication1
                         row_data.Add((temp * local_volume).ToString());
 
                     }
-                    if(last_row_data.LongCount() == 0)
+                    if (last_row_data.LongCount() == 0)
                     {
                         last_row_data = row_data.ToList();
                     }
                     else
                     {
-                        for(int i = 1; i < last_row_data.LongCount(); i++)
+                        for (int i = 1; i < last_row_data.LongCount(); i++)
                         {
                             row_data[i] = (stofloat(row_data[i]) + stofloat(last_row_data[i])).ToString();
                         }
@@ -466,21 +506,22 @@ namespace WindowsFormsApplication1
             }
 
             output_report_table = local_table;
-            local_tabpage.Controls.Add(local_table);
-            tabControl1.TabPages.Add(local_tabpage);
-            tabControl1.Refresh();
-            tabControl1.SizeMode = TabSizeMode.FillToRight;
+
         }
 
 
         private void generate_report_tab_type2(List<List<string>> sheet, string sheet_key)
         {
-            tabControl1.TabPages.Clear();
             string formulation_id = sheet_key.Remove(0, 11);
-            var local_table = create_report_table_template();
-            var local_tabpage = new TabPage();
-            local_tabpage.Height = 700;
-            local_tabpage.Width = 700;
+            DataGridView local_table;
+            if (output_report_table.RowCount < 1)
+            {
+                local_table = create_report_table_template();
+            }
+            else
+            {
+                local_table = output_report_table;
+            }
             float local_volume;
             List<string> row_data;
             string c_label = "Default Null";
@@ -510,6 +551,8 @@ namespace WindowsFormsApplication1
             foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
             {
                 local_table.Rows.Add(c_dict.Value);
+                local_table.Rows.Add("API");
+                local_table.Rows.Add("Formulation Name");
                 foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
                 {
                     local_volume = receptor_volume_dict[r_dict.Key];
@@ -555,10 +598,6 @@ namespace WindowsFormsApplication1
             }
 
             output_report_table = local_table;
-            local_tabpage.Controls.Add(local_table);
-            tabControl1.TabPages.Add(local_tabpage);
-            tabControl1.Refresh();
-            tabControl1.SizeMode = TabSizeMode.FillToRight;
         }
 
 
@@ -741,12 +780,13 @@ namespace WindowsFormsApplication1
                 ReadXls(filename);
                 render_param_table();
                 param_dict = load_params();
-                if(param_dict["extra"]["studytype"] == "1")
+                if (param_dict["extra"]["studytype"] == "1")
                 {
                     study_type = 1;
                     this.study_type_1.Checked = true;
                 }
-                else if(param_dict["extra"]["studytype"] == "2"){
+                else if (param_dict["extra"]["studytype"] == "2")
+                {
                     study_type = 2;
                     this.study_type_2.Checked = true;
                 }
@@ -759,22 +799,31 @@ namespace WindowsFormsApplication1
 
         private void create_report_table()
         {
-
+            tabControl1.TabPages.Clear();
+            output_report_table = new DataGridView();
+            var local_tabpage = new TabPage();
+            local_tabpage.Height = 700;
+            local_tabpage.Width = 700;
             foreach (KeyValuePair<string, List<List<string>>> sheet in load_dict)
             {
                 if (sheet.Key == "Do not touch!")
                 {
                     continue;
                 }
-                if(study_type == 1)
+                if (study_type == 1)
                 {
                     generate_report_tab_type1(sheet.Value, sheet.Key);
-                }else if(study_type == 2)
+                }
+                else if (study_type == 2)
                 {
                     generate_report_tab_type2(sheet.Value, sheet.Key);
                 }
-                
+
             }
+            local_tabpage.Controls.Add(output_report_table);
+            tabControl1.TabPages.Add(local_tabpage);
+            tabControl1.Refresh();
+            tabControl1.SizeMode = TabSizeMode.FillToRight;
         }
 
 
