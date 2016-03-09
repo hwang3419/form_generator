@@ -53,6 +53,9 @@
             this.button1 = new System.Windows.Forms.Button();
             this.button_load = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.table)).BeginInit();
             this.SuspendLayout();
             // 
@@ -203,8 +206,11 @@
             this.Column1,
             this.Column2,
             this.Column3,
-            this.volume});
-            this.table.Location = new System.Drawing.Point(21, 264);
+            this.volume,
+            this.Column4,
+            this.Column5,
+            this.Column6});
+            this.table.Location = new System.Drawing.Point(23, 264);
             this.table.Name = "table";
             this.table.RowTemplate.Height = 23;
             this.table.Size = new System.Drawing.Size(366, 461);
@@ -281,6 +287,21 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click_1);
             // 
+            // Column4
+            // 
+            this.Column4.HeaderText = "API Concentration";
+            this.Column4.Name = "Column4";
+            // 
+            // Column5
+            // 
+            this.Column5.HeaderText = "Dosed Before";
+            this.Column5.Name = "Column5";
+            // 
+            // Column6
+            // 
+            this.Column6.HeaderText = "Dosed After";
+            this.Column6.Name = "Column6";
+            // 
             // Excel_Gen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -343,6 +364,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn volume;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
     }
 }
 

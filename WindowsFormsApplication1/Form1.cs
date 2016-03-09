@@ -79,22 +79,22 @@ namespace WindowsFormsApplication1
             count = Int32.Parse(this.compound.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Compound" + i.ToString(), i, i, 1);
+                this.table.Rows.Add("Compound" + i.ToString(), i, i, 1,0,0,0);
             }
             count = Int32.Parse(this.time_point.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Time Point" + i.ToString(), i, i * 2, 1);
+                this.table.Rows.Add("Time Point" + i.ToString(), i, i * 2, 1, 0, 0, 0);
             }
             count = Int32.Parse(this.layer.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Layer" + i.ToString(), i, "L", 1);
+                this.table.Rows.Add("Layer" + i.ToString(), i, "L", 1, 0, 0, 0);
             }
             count = Int32.Parse(this.formulation.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Formulation" + i.ToString(), i, i, 1);
+                this.table.Rows.Add("Formulation" + i.ToString(), i, i, 1, 0, 0, 0);
             }
             this.table.Rows.Add("Project ID", project_id.Text.ToString());
             this.table.Rows.Add("replica", replica.Text.ToString());
@@ -127,6 +127,8 @@ namespace WindowsFormsApplication1
             var formulation_dict = new Dictionary<string, string>();
             var result_dict = new Dictionary<string, Dictionary<string, string>>();
             var extra_dict = new Dictionary<string, string>();
+            List<string> formulation_extra_list = new List<string>();
+            Dictionary<string, List<string>> formulation_extra_dict = new Dictionary<string, List<string>>();
             layer_volume_dict = new Dictionary<string, float>();
             receptor_volume_dict = new Dictionary<string, float>();
             foreach (DataGridViewRow row in this.table.Rows)
@@ -150,6 +152,7 @@ namespace WindowsFormsApplication1
                 else if (row.Cells[0].Value.ToString().StartsWith("Formulation"))
                 {
                     formulation_dict[row.Cells[1].Value.ToString()] = row.Cells[2].Value.ToString();
+                    formulation_extra_dict[row.Cells[1].Value.ToString()] = new List<string> { row.Cells[4].Value.ToString(), row.Cells[5].Value.ToString(), row.Cells[6].Value.ToString() };
                 }
                 else if (row.Cells[0].Value.ToString().StartsWith("Project"))
                 {
@@ -355,7 +358,21 @@ namespace WindowsFormsApplication1
             new_table.Rows.Add(api_list.ToArray());
             new_table.Rows.Add("", "", "API Concentration", " Dosed Amount / g", "Dosed Amount for Each Cell/ mg", " Applied Amount of API / mg");
             new_table.Rows.Add(" ");
-            new_table.Rows.Add("Formulation");
+            int row_count = 0;
+            foreach (KeyValuePair<string, string> kv in param_dict["formulation"])
+            {
+                if (row_count == 0)
+                {
+                    row_count += 1;
+                    new_table.Rows.Add("Formulation", kv.Value);
+                }
+                 else
+                {
+                    new_table.Rows.Add("", kv.Value);
+                }
+                
+            }
+            
             new_table.Rows.Add("Tissue No.");
             new_table.Rows.Add("Age/Race/Gender");
             new_table.Rows.Add("Thickness/mm");
@@ -381,9 +398,10 @@ namespace WindowsFormsApplication1
 
         private float stofloat(string param)
         {
+            
             return float.Parse(param, CultureInfo.InvariantCulture.NumberFormat);
         }
-
+        
         private List<string> append_data(List<string> data)
         {
             float sum = 0;
@@ -393,7 +411,21 @@ namespace WindowsFormsApplication1
             long length = data.LongCount() - 1;
             for (int i = 1; i < data.LongCount(); i++)
             {
-                sum += stofloat(data[i]);
+                float result;
+                bool isNumber = float.TryParse(data[i], out result);
+                if (isNumber)
+                {
+                    sum += result;
+                }
+                else
+                {
+                    data.Add("NA");
+                    data.Add("NA");
+                    data.Add("NA");
+                    data.Add("NA");
+                    return data;
+                }
+                
             }
             avg = sum / (length);
             for (int i = 1; i < data.LongCount(); i++)
@@ -425,7 +457,7 @@ namespace WindowsFormsApplication1
 
             float local_volume;
             List<string> row_data;
-            string c_label = "Default Null";
+            string c_label = "NA";
             row_data = new List<string>();
             Dictionary<string, Dictionary<string, string>> query_sheet = new Dictionary<string, Dictionary<string, string>>();
             query_sheet.Clear();
@@ -454,8 +486,7 @@ namespace WindowsFormsApplication1
             List<string> last_row_data = new List<string>();
             foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
             {
-                local_table.Rows.Add(c_dict.Value);
-                local_table.Rows.Add("API");
+                local_table.Rows.Add("API", c_dict.Value);
                 local_table.Rows.Add("Formulation Name");
                 foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
                 {
@@ -467,8 +498,18 @@ namespace WindowsFormsApplication1
                     {
 
                         string id_label = c_label + "-" + i.ToString();
-                        float temp = float.Parse(query_sheet[c_dict.Value][id_label], CultureInfo.InvariantCulture.NumberFormat);
-                        row_data.Add((temp * local_volume).ToString());
+                        float float_result;
+                        bool isNumber = float.TryParse(query_sheet[c_dict.Value][id_label], out float_result);
+                        if (isNumber)
+                        {
+                            row_data.Add((float_result * local_volume).ToString());
+                        }
+                        else
+                        {
+                            row_data.Add("NA");
+                        }
+                        //float temp = float.Parse(query_sheet[c_dict.Value][id_label], CultureInfo.InvariantCulture.NumberFormat);
+                        //row_data.Add((temp * local_volume).ToString());
 
                     }
                     if (last_row_data.LongCount() == 0)
@@ -479,7 +520,19 @@ namespace WindowsFormsApplication1
                     {
                         for (int i = 1; i < last_row_data.LongCount(); i++)
                         {
-                            row_data[i] = (stofloat(row_data[i]) + stofloat(last_row_data[i])).ToString();
+                            float float_result_1;
+                            bool isNumber_1 = float.TryParse(row_data[i], out float_result_1);
+                            float float_result_2;
+                            bool isNumber_2 = float.TryParse(row_data[i], out float_result_2);
+                            if (isNumber_1 && isNumber_2)
+                            {
+                                row_data[i] = (float_result_1 + float_result_2).ToString();
+                            }
+                            else
+                            {
+                                row_data[i] = "NA";
+                            }
+                            
                         }
                         last_row_data = row_data.ToList();
                     }
@@ -496,8 +549,17 @@ namespace WindowsFormsApplication1
                     {
                         local_volume = layer_volume_dict[l_dict.Key];
                         string id_label = c_label + "-" + i.ToString();
-                        float temp = float.Parse(query_sheet[c_dict.Value][id_label], CultureInfo.InvariantCulture.NumberFormat);
-                        row_data.Add((temp * local_volume).ToString());
+                        float float_result;
+                        bool isNumber = float.TryParse(query_sheet[c_dict.Value][id_label], out float_result);
+                        if (isNumber)
+                        {
+                            row_data.Add((float_result * local_volume).ToString());
+                        }
+                        else
+                        {
+                            row_data.Add("NA");
+                        }
+                        
 
                     }
                     row_data = append_data(row_data);
@@ -550,8 +612,7 @@ namespace WindowsFormsApplication1
 
             foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
             {
-                local_table.Rows.Add(c_dict.Value);
-                local_table.Rows.Add("API");
+                local_table.Rows.Add("API", c_dict.Value);
                 local_table.Rows.Add("Formulation Name");
                 foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
                 {
@@ -563,8 +624,16 @@ namespace WindowsFormsApplication1
                     {
 
                         string id_label = c_label + "-" + i.ToString();
-                        float temp = float.Parse(query_sheet[c_dict.Value][id_label], CultureInfo.InvariantCulture.NumberFormat);
-                        row_data.Add((temp * local_volume).ToString());
+                        float float_result;
+                        bool isNumber = float.TryParse(query_sheet[c_dict.Value][id_label], out float_result);
+                        if (isNumber)
+                        {
+                            row_data.Add((float_result * local_volume).ToString());
+                        }
+                        else
+                        {
+                            row_data.Add("NA");
+                        }
 
                     }
                     row_data = append_data(row_data);
@@ -581,8 +650,18 @@ namespace WindowsFormsApplication1
                         {
 
                             string id_label = c_label + "-" + i.ToString();
-                            float temp = float.Parse(query_sheet[c_dict.Value][id_label], CultureInfo.InvariantCulture.NumberFormat);
-                            row_data.Add((temp * local_volume).ToString());
+                            float float_result;
+                            bool isNumber = float.TryParse(query_sheet[c_dict.Value][id_label], out float_result);
+                            if (isNumber)
+                            {
+                                row_data.Add((float_result * local_volume).ToString());
+                            }
+                            else
+                            {
+                                row_data.Add("NA");
+                            }
+                           // float temp = float.Parse(query_sheet[c_dict.Value][id_label], CultureInfo.InvariantCulture.NumberFormat);
+                           // row_data.Add((temp * local_volume).ToString());
 
                         }
                         row_data = append_data(row_data);
@@ -837,7 +916,7 @@ namespace WindowsFormsApplication1
                 {
                     continue;
                 }
-                this.table.Rows.Add(row[0], row[1], row[2], row[3]);
+                this.table.Rows.Add(row[0], row[1], row[2], row[3],row[4], row[5], row[6]);
             }
         }
 
@@ -967,6 +1046,11 @@ namespace WindowsFormsApplication1
                 Clipboard.Clear();
                 GC.Collect();
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
