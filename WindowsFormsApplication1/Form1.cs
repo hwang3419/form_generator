@@ -27,6 +27,8 @@ namespace WindowsFormsApplication1
         public Dictionary<string, float> layer_volume_dict;
         public Dictionary<string, float> receptor_volume_dict;
         public DataGridView output_report_table;
+        public Dictionary<string, List<string>> formulation_extra_dict;
+        public Dictionary<string, float> mass_balance_dict;
         public Excel_Gen()
         {
             InitializeComponent();
@@ -128,9 +130,9 @@ namespace WindowsFormsApplication1
             var result_dict = new Dictionary<string, Dictionary<string, string>>();
             var extra_dict = new Dictionary<string, string>();
             List<string> formulation_extra_list = new List<string>();
-            Dictionary<string, List<string>> formulation_extra_dict = new Dictionary<string, List<string>>();
             layer_volume_dict = new Dictionary<string, float>();
             receptor_volume_dict = new Dictionary<string, float>();
+            formulation_extra_dict = new Dictionary<string, List<string>>();
             foreach (DataGridViewRow row in this.table.Rows)
             {
                 if (row.Cells[0].Value == null)
@@ -177,11 +179,14 @@ namespace WindowsFormsApplication1
 
         private void generate_tabs_type1(Dictionary<string, Dictionary<string, string>> param)
         {
+
             foreach (KeyValuePair<string, string> entry in param["formulation"])
             {
                 var tab = generate_one_tab_type1(param, entry);
-                this.tabControl1.Controls.Add(tab);
+                //order_list.Add(tab);
+                this.tabControl1.TabPages.Insert(tabControl1.TabPages.Count, tab);
             }
+            //for(int i = 0; i < order_list.Count(); i++) { }
 
             tabControl1.Refresh();
             tabControl1.SizeMode = TabSizeMode.FillToRight;
@@ -245,7 +250,7 @@ namespace WindowsFormsApplication1
             foreach (KeyValuePair<string, string> entry in param["formulation"])
             {
                 var tab = generate_one_tab_type2(param, entry);
-                this.tabControl1.Controls.Add(tab);
+                this.tabControl1.TabPages.Insert(tabControl1.TabPages.Count, tab);
             }
 
             tabControl1.Refresh();
@@ -350,43 +355,57 @@ namespace WindowsFormsApplication1
             new_table.Rows.Add("");
             new_table.Rows.Add("Tissue diffusion area (cm2):");
             List<string> api_list = new List<string>();
+            mass_balance_dict = new Dictionary<string, float>();
             api_list.Add("API");
             foreach (KeyValuePair<string,string> kv in param_dict["compound"])
             {
                 api_list.Add(kv.Value);
             }
             new_table.Rows.Add(api_list.ToArray());
-            new_table.Rows.Add("", "", "API Concentration", " Dosed Amount / g", "Dosed Amount for Each Cell/ mg", " Applied Amount of API / mg");
-            new_table.Rows.Add(" ");
-            int row_count = 0;
-            foreach (KeyValuePair<string, string> kv in param_dict["formulation"])
+            new_table.Rows.Add("","",  "API Concentration", " Dosed Amount / g", "Dosed Amount for Each Cell/ mg", " Applied Amount of API / mg");
+            int count = 0;
+            foreach (KeyValuePair<string,List< string>> kv in formulation_extra_dict)
             {
-                if (row_count == 0)
-                {
-                    row_count += 1;
-                    new_table.Rows.Add("Formulation", kv.Value);
+                List<string> rowdata = new List<string>();
+                if (count == 0){
+                    count += 1;
+                    rowdata.Add("Formulation");
                 }
-                 else
+                else
                 {
-                    new_table.Rows.Add("", kv.Value);
+                    rowdata.Add("");
                 }
                 
+
+                float temp1,temp2,temp3;
+                rowdata.Add(kv.Key.ToString());
+                float  dose_before, dose_after, api_con;
+                float.TryParse(kv.Value[0].ToString(), out dose_before);
+                float.TryParse(kv.Value[1].ToString(), out dose_after);
+                float.TryParse(kv.Value[2].ToString(), out api_con);
+                rowdata.Add(api_con.ToString());
+                temp1 = ( dose_before - dose_after)*1000;
+                rowdata.Add(temp1.ToString());
+                temp2 = temp1 / replica_int;
+                mass_balance_dict[kv.Key.ToString()] = temp2;
+                rowdata.Add(temp2.ToString());
+                temp3 = temp1 * temp2 * 1000000;
+                rowdata.Add(temp3.ToString());
+                new_table.Rows.Add(rowdata.ToArray());
+
             }
             
             new_table.Rows.Add("Tissue No.");
             new_table.Rows.Add("Age/Race/Gender");
             new_table.Rows.Add("Thickness/mm");
             api_list = new List<string>();
-            List<string> value_list = new List<string>();
             api_list.Add("Time point");
-            value_list.Add("Replicate");
             foreach (KeyValuePair<string, string> kv in param_dict["time"])
             {
-                api_list.Add("Time Point #"+kv.Key.ToString());
-                value_list.Add(kv.Value);
+                api_list.Add("Time Point "+kv.Value.ToString());
             }
             new_table.Rows.Add(api_list.ToArray());
-            new_table.Rows.Add(value_list.ToArray());
+            new_table.Rows.Add("Replicate", replica_int.ToString(), "Time Points", param_dict["time"].Count().ToString());
             new_table.Rows.Add("Note:");
             new_table.Rows.Add(" ");
 
@@ -456,6 +475,10 @@ namespace WindowsFormsApplication1
             }
 
             float local_volume;
+            string sum_average;
+            float sum_average_float;
+            sum_average = "";
+            sum_average_float = 0;
             List<string> row_data;
             string c_label = "NA";
             row_data = new List<string>();
@@ -487,7 +510,7 @@ namespace WindowsFormsApplication1
             foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
             {
                 local_table.Rows.Add("API", c_dict.Value);
-                local_table.Rows.Add("Formulation Name");
+                local_table.Rows.Add("Formulation Name", sheet_key);
                 foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
                 {
                     local_volume = receptor_volume_dict[r_dict.Key];
@@ -538,6 +561,8 @@ namespace WindowsFormsApplication1
                     }
                     row_data = append_data(row_data);
                     local_table.Rows.Add(row_data.ToArray());
+                    sum_average = row_data[row_data.Count() - 3];
+                    float.TryParse(sum_average, out sum_average_float);
                 }
 
                 foreach (KeyValuePair<string, string> l_dict in param_dict["layer"])
@@ -563,9 +588,32 @@ namespace WindowsFormsApplication1
 
                     }
                     row_data = append_data(row_data);
-                    local_table.Rows.Add(row_data.ToArray());
+                    
                 }
+                float result_float;
+                sum_average = row_data[row_data.Count() - 3];
+                if (float.TryParse(sum_average, out result_float))
+                {
+                    sum_average_float += result_float;
+                }
+                else
+                {
+                    sum_average = "NA";
+                }
+                local_table.Rows.Add(row_data.ToArray());
+                if (sum_average == "NA")
+                {
+                    local_table.Rows.Add("Sum", "NA");
+
+                }
+                else
+                {
+                    local_table.Rows.Add("sum", sum_average_float.ToString());
+                    local_table.Rows.Add("mass balance", (sum_average_float / mass_balance_dict[formulation_id]).ToString());
+                }
+                local_table.Rows.Add("");
             }
+            
 
             output_report_table = local_table;
 
@@ -613,7 +661,7 @@ namespace WindowsFormsApplication1
             foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
             {
                 local_table.Rows.Add("API", c_dict.Value);
-                local_table.Rows.Add("Formulation Name");
+                local_table.Rows.Add("Formulation Name", sheet_key);
                 foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
                 {
                     local_volume = receptor_volume_dict[r_dict.Key];
@@ -673,7 +721,7 @@ namespace WindowsFormsApplication1
                 //{
 
                 //}
-
+                local_table.Rows.Add("");
             }
 
             output_report_table = local_table;
