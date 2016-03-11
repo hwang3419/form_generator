@@ -380,9 +380,9 @@ namespace WindowsFormsApplication1
                 float temp1,temp2,temp3;
                 rowdata.Add(kv.Key.ToString());
                 float  dose_before, dose_after, api_con;
-                float.TryParse(kv.Value[0].ToString(), out dose_before);
-                float.TryParse(kv.Value[1].ToString(), out dose_after);
-                float.TryParse(kv.Value[2].ToString(), out api_con);
+                float.TryParse(kv.Value[0].ToString(), out api_con);
+                float.TryParse(kv.Value[1].ToString(), out dose_before );
+                float.TryParse(kv.Value[2].ToString(), out dose_after);
                 rowdata.Add(api_con.ToString());
                 temp1 = ( dose_before - dose_after)*1000;
                 rowdata.Add(temp1.ToString());
@@ -458,12 +458,17 @@ namespace WindowsFormsApplication1
             data.Add((std / avg).ToString());
             return data;
         }
-
+        private string get_formulation_name(string sheetid)
+        {
+            string formulation_id = sheetid.Remove(0, 11);
+            return param_dict["formulation"][formulation_id];
+        }
 
         private void generate_report_tab_type1(List<List<string>> sheet, string sheet_key)
         {
 
             string formulation_id = sheet_key.Remove(0, 11);
+            string formulation_realname = get_formulation_name(sheet_key);
             DataGridView local_table;
             if (output_report_table.RowCount < 1)
             {
@@ -510,7 +515,8 @@ namespace WindowsFormsApplication1
             foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
             {
                 local_table.Rows.Add("API", c_dict.Value);
-                local_table.Rows.Add("Formulation Name", sheet_key);
+                local_table.Rows.Add("Formulation Name", formulation_realname);
+                last_row_data = new List<string>();
                 foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
                 {
                     local_volume = receptor_volume_dict[r_dict.Key];
@@ -546,7 +552,7 @@ namespace WindowsFormsApplication1
                             float float_result_1;
                             bool isNumber_1 = float.TryParse(row_data[i], out float_result_1);
                             float float_result_2;
-                            bool isNumber_2 = float.TryParse(row_data[i], out float_result_2);
+                            bool isNumber_2 = float.TryParse(last_row_data[i], out float_result_2);
                             if (isNumber_1 && isNumber_2)
                             {
                                 row_data[i] = (float_result_1 + float_result_2).ToString();
@@ -588,19 +594,20 @@ namespace WindowsFormsApplication1
 
                     }
                     row_data = append_data(row_data);
-                    
+                    local_table.Rows.Add(row_data.ToArray());
+                    float result_float;
+                    sum_average = row_data[row_data.Count() - 3];
+                    if (float.TryParse(sum_average, out result_float))
+                    {
+                        sum_average_float += result_float;
+                    }
+                    else
+                    {
+                        sum_average = "NA";
+                    }
                 }
-                float result_float;
-                sum_average = row_data[row_data.Count() - 3];
-                if (float.TryParse(sum_average, out result_float))
-                {
-                    sum_average_float += result_float;
-                }
-                else
-                {
-                    sum_average = "NA";
-                }
-                local_table.Rows.Add(row_data.ToArray());
+               
+                
                 if (sum_average == "NA")
                 {
                     local_table.Rows.Add("Sum", "NA");
@@ -623,6 +630,7 @@ namespace WindowsFormsApplication1
         private void generate_report_tab_type2(List<List<string>> sheet, string sheet_key)
         {
             string formulation_id = sheet_key.Remove(0, 11);
+            string formulation_realname = get_formulation_name(sheet_key);
             DataGridView local_table;
             if (output_report_table.RowCount < 1)
             {
@@ -661,7 +669,7 @@ namespace WindowsFormsApplication1
             foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
             {
                 local_table.Rows.Add("API", c_dict.Value);
-                local_table.Rows.Add("Formulation Name", sheet_key);
+                local_table.Rows.Add("Formulation Name", formulation_realname);
                 foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
                 {
                     local_volume = receptor_volume_dict[r_dict.Key];
@@ -931,19 +939,21 @@ namespace WindowsFormsApplication1
             var local_tabpage = new TabPage();
             local_tabpage.Height = 700;
             local_tabpage.Width = 700;
-            foreach (KeyValuePair<string, List<List<string>>> sheet in load_dict)
+            List<string> fname_list = new List<string>();
+            for (int i = 1; i <= param_dict["formulation"].Count(); i++)
             {
-                if (sheet.Key == "Do not touch!")
-                {
-                    continue;
-                }
+                fname_list.Add("Formulation" + i.ToString());
+            }
+            //foreach (KeyValuePair<string, List<List<string>>> sheet in load_dict)
+            foreach(string fname in fname_list)
+            {
                 if (study_type == 1)
                 {
-                    generate_report_tab_type1(sheet.Value, sheet.Key);
+                    generate_report_tab_type1(load_dict[fname], fname);
                 }
                 else if (study_type == 2)
                 {
-                    generate_report_tab_type2(sheet.Value, sheet.Key);
+                    generate_report_tab_type2(load_dict[fname], fname);
                 }
 
             }
