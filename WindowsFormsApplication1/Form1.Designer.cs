@@ -48,14 +48,14 @@
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.volume = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.generate_table = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.button1 = new System.Windows.Forms.Button();
             this.button_load = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.table)).BeginInit();
             this.SuspendLayout();
             // 
@@ -210,7 +210,7 @@
             this.Column4,
             this.Column5,
             this.Column6});
-            this.table.Location = new System.Drawing.Point(23, 264);
+            this.table.Location = new System.Drawing.Point(12, 264);
             this.table.Name = "table";
             this.table.RowTemplate.Height = 23;
             this.table.Size = new System.Drawing.Size(366, 461);
@@ -237,6 +237,21 @@
             // 
             this.volume.HeaderText = "Volume";
             this.volume.Name = "volume";
+            // 
+            // Column4
+            // 
+            this.Column4.HeaderText = "API Concentration";
+            this.Column4.Name = "Column4";
+            // 
+            // Column5
+            // 
+            this.Column5.HeaderText = "Dosed Before";
+            this.Column5.Name = "Column5";
+            // 
+            // Column6
+            // 
+            this.Column6.HeaderText = "Dosed After";
+            this.Column6.Name = "Column6";
             // 
             // generate_table
             // 
@@ -286,21 +301,6 @@
             this.button2.Text = "Export Report";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click_1);
-            // 
-            // Column4
-            // 
-            this.Column4.HeaderText = "API Concentration";
-            this.Column4.Name = "Column4";
-            // 
-            // Column5
-            // 
-            this.Column5.HeaderText = "Dosed Before";
-            this.Column5.Name = "Column5";
-            // 
-            // Column6
-            // 
-            this.Column6.HeaderText = "Dosed After";
-            this.Column6.Name = "Column6";
             // 
             // Excel_Gen
             // 

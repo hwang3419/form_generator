@@ -81,7 +81,7 @@ namespace WindowsFormsApplication1
             count = Int32.Parse(this.compound.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Compound" + i.ToString(), i, i, 1,0,0,0);
+                this.table.Rows.Add("Compound" + i.ToString(), i, i, 1, 0, 0, 0);
             }
             count = Int32.Parse(this.time_point.Text.ToString());
             for (int i = 1; i <= count; i++)
@@ -357,17 +357,18 @@ namespace WindowsFormsApplication1
             List<string> api_list = new List<string>();
             mass_balance_dict = new Dictionary<string, float>();
             api_list.Add("API");
-            foreach (KeyValuePair<string,string> kv in param_dict["compound"])
+            foreach (KeyValuePair<string, string> kv in param_dict["compound"])
             {
                 api_list.Add(kv.Value);
             }
             new_table.Rows.Add(api_list.ToArray());
-            new_table.Rows.Add("","",  "API Concentration", " Dosed Amount / g", "Dosed Amount for Each Cell/ mg", " Applied Amount of API / mg");
+            new_table.Rows.Add("", "", "API Concentration", " Dosed Amount / mg", "Dosed Amount for Each Cell/ mg", " Applied Amount of API / ng");
             int count = 0;
-            foreach (KeyValuePair<string,List< string>> kv in formulation_extra_dict)
+            foreach (KeyValuePair<string, List<string>> kv in formulation_extra_dict)
             {
                 List<string> rowdata = new List<string>();
-                if (count == 0){
+                if (count == 0)
+                {
                     count += 1;
                     rowdata.Add("Formulation");
                 }
@@ -375,26 +376,57 @@ namespace WindowsFormsApplication1
                 {
                     rowdata.Add("");
                 }
-                
 
-                float temp1,temp2,temp3;
+
+                float temp1, temp2, temp3;
                 rowdata.Add(kv.Key.ToString());
-                float  dose_before, dose_after, api_con;
-                float.TryParse(kv.Value[0].ToString(), out api_con);
-                float.TryParse(kv.Value[1].ToString(), out dose_before );
+                float dose_before, dose_after, api_con;
+                float.TryParse(kv.Value[1].ToString(), out dose_before);
                 float.TryParse(kv.Value[2].ToString(), out dose_after);
-                rowdata.Add(api_con.ToString());
-                temp1 = ( dose_before - dose_after)*1000;
-                rowdata.Add(temp1.ToString());
-                temp2 = temp1 / replica_int;
-                mass_balance_dict[kv.Key.ToString()] = temp2;
-                rowdata.Add(temp2.ToString());
-                temp3 = temp1 * temp2 * 1000000;
-                rowdata.Add(temp3.ToString());
+                if (kv.Value[0].ToString().Contains(","))
+                {
+                    string[] api_con_list = kv.Value[0].Split(',');
+                    string api_con_result="";
+                    rowdata.Add(kv.Value[0].ToString());
+                    temp1 = (dose_before - dose_after) * 1000;
+                    rowdata.Add(temp1.ToString());
+                    temp2 = temp1 / replica_int;
+                    mass_balance_dict[kv.Key.ToString()] = temp2;
+                    rowdata.Add(temp2.ToString());
+                    foreach (string api_string in api_con_list)
+                    {
+                        string trimed = api_string.Trim();
+                        float.TryParse(trimed, out api_con);
+                        temp3 = api_con * temp2 * 1000000;
+                        if (api_con_result == "")
+                        {
+                            api_con_result = temp3.ToString();
+                        }
+                        else
+                        {
+                            api_con_result = api_con_result + "," + temp3.ToString();
+                        }
+                        
+
+                    }
+                    rowdata.Add(api_con_result);
+                }
+                else
+                {
+                    float.TryParse(kv.Value[0].ToString(), out api_con);
+                    rowdata.Add(api_con.ToString());
+                    temp1 = (dose_before - dose_after) * 1000;
+                    rowdata.Add(temp1.ToString());
+                    temp2 = temp1 / replica_int;
+                    mass_balance_dict[kv.Key.ToString()] = temp2;
+                    rowdata.Add(temp2.ToString());
+                    temp3 = api_con * temp2 * 1000000;
+                    rowdata.Add(temp3.ToString());
+                }
                 new_table.Rows.Add(rowdata.ToArray());
 
             }
-            
+
             new_table.Rows.Add("Tissue No.");
             new_table.Rows.Add("Age/Race/Gender");
             new_table.Rows.Add("Thickness/mm");
@@ -402,7 +434,7 @@ namespace WindowsFormsApplication1
             api_list.Add("Time point");
             foreach (KeyValuePair<string, string> kv in param_dict["time"])
             {
-                api_list.Add("Time Point "+kv.Value.ToString());
+                api_list.Add("Time Point " + kv.Value.ToString());
             }
             new_table.Rows.Add(api_list.ToArray());
             new_table.Rows.Add("Replicate", replica_int.ToString(), "Time Points", param_dict["time"].Count().ToString());
@@ -417,10 +449,10 @@ namespace WindowsFormsApplication1
 
         private float stofloat(string param)
         {
-            
+
             return float.Parse(param, CultureInfo.InvariantCulture.NumberFormat);
         }
-        
+
         private List<string> append_data(List<string> data)
         {
             float sum = 0;
@@ -444,7 +476,7 @@ namespace WindowsFormsApplication1
                     data.Add("NA");
                     return data;
                 }
-                
+
             }
             avg = sum / (length);
             for (int i = 1; i < data.LongCount(); i++)
@@ -515,7 +547,7 @@ namespace WindowsFormsApplication1
             foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
             {
                 local_table.Rows.Add("API", c_dict.Value);
-                local_table.Rows.Add("Formulation Name", formulation_realname);
+                local_table.Rows.Add(formulation_realname);
                 last_row_data = new List<string>();
                 foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
                 {
@@ -561,7 +593,7 @@ namespace WindowsFormsApplication1
                             {
                                 row_data[i] = "NA";
                             }
-                            
+
                         }
                         last_row_data = row_data.ToList();
                     }
@@ -590,7 +622,7 @@ namespace WindowsFormsApplication1
                         {
                             row_data.Add("NA");
                         }
-                        
+
 
                     }
                     row_data = append_data(row_data);
@@ -606,8 +638,8 @@ namespace WindowsFormsApplication1
                         sum_average = "NA";
                     }
                 }
-               
-                
+
+
                 if (sum_average == "NA")
                 {
                     local_table.Rows.Add("Sum", "NA");
@@ -620,7 +652,7 @@ namespace WindowsFormsApplication1
                 }
                 local_table.Rows.Add("");
             }
-            
+
 
             output_report_table = local_table;
 
@@ -669,7 +701,7 @@ namespace WindowsFormsApplication1
             foreach (KeyValuePair<string, string> c_dict in param_dict["compound"])
             {
                 local_table.Rows.Add("API", c_dict.Value);
-                local_table.Rows.Add("Formulation Name", formulation_realname);
+                local_table.Rows.Add(formulation_realname);
                 foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
                 {
                     local_volume = receptor_volume_dict[r_dict.Key];
@@ -716,8 +748,8 @@ namespace WindowsFormsApplication1
                             {
                                 row_data.Add("NA");
                             }
-                           // float temp = float.Parse(query_sheet[c_dict.Value][id_label], CultureInfo.InvariantCulture.NumberFormat);
-                           // row_data.Add((temp * local_volume).ToString());
+                            // float temp = float.Parse(query_sheet[c_dict.Value][id_label], CultureInfo.InvariantCulture.NumberFormat);
+                            // row_data.Add((temp * local_volume).ToString());
 
                         }
                         row_data = append_data(row_data);
@@ -945,7 +977,7 @@ namespace WindowsFormsApplication1
                 fname_list.Add("Formulation" + i.ToString());
             }
             //foreach (KeyValuePair<string, List<List<string>>> sheet in load_dict)
-            foreach(string fname in fname_list)
+            foreach (string fname in fname_list)
             {
                 if (study_type == 1)
                 {
@@ -974,7 +1006,7 @@ namespace WindowsFormsApplication1
                 {
                     continue;
                 }
-                this.table.Rows.Add(row[0], row[1], row[2], row[3],row[4], row[5], row[6]);
+                this.table.Rows.Add(row[0], row[1], row[2], row[3], row[4], row[5], row[6]);
             }
         }
 
