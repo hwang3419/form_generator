@@ -81,26 +81,32 @@ namespace WindowsFormsApplication1
             count = Int32.Parse(this.compound.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Compound" + i.ToString(), i, i, 1, 0, 0, 0);
+                this.table.Rows.Add("Compound" + i.ToString(), i, i, 1, 0, 0);
             }
             count = Int32.Parse(this.time_point.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Time Point" + i.ToString(), i, i * 2, 1, 0, 0, 0);
+                this.table.Rows.Add("Time Point" + i.ToString(), i, i * 2, 1, 0,  0);
             }
             count = Int32.Parse(this.layer.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Layer" + i.ToString(), i, "L", 1, 0, 0, 0);
+                this.table.Rows.Add("Layer" + i.ToString(), i, "L", 1, 0, 0);
             }
             count = Int32.Parse(this.formulation.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Formulation" + i.ToString(), i, i, 1, 0, 0, 0);
+                this.table.Rows.Add("Formulation" + i.ToString(), i, i, 1, 0, 0);
+            }
+            count = Int32.Parse(this.api_count_box.Text.ToString());
+            for (int i = 1; i <= count; i++)
+            {
+                this.table.Rows.Add("API_" + i.ToString(), i, i, 1, 0, 0);
             }
             this.table.Rows.Add("Project ID", project_id.Text.ToString());
             this.table.Rows.Add("replica", replica.Text.ToString());
             this.table.Rows.Add("study_type", get_study_type());
+            this.table.Rows.Add("api", api_count_box.Text.ToString());
 
         }
 
@@ -127,6 +133,7 @@ namespace WindowsFormsApplication1
             var layer_dict = new Dictionary<string, string>();
             var time_dict = new Dictionary<string, string>();
             var formulation_dict = new Dictionary<string, string>();
+            var api_con_dict = new Dictionary<string, string>();
             var result_dict = new Dictionary<string, Dictionary<string, string>>();
             var extra_dict = new Dictionary<string, string>();
             List<string> formulation_extra_list = new List<string>();
@@ -154,7 +161,7 @@ namespace WindowsFormsApplication1
                 else if (row.Cells[0].Value.ToString().StartsWith("Formulation"))
                 {
                     formulation_dict[row.Cells[1].Value.ToString()] = row.Cells[2].Value.ToString();
-                    formulation_extra_dict[row.Cells[1].Value.ToString()] = new List<string> { row.Cells[4].Value.ToString(), row.Cells[5].Value.ToString(), row.Cells[6].Value.ToString() };
+                    formulation_extra_dict[row.Cells[1].Value.ToString()] = new List<string> { row.Cells[4].Value.ToString(), row.Cells[5].Value.ToString()};
                 }
                 else if (row.Cells[0].Value.ToString().StartsWith("Project"))
                 {
@@ -168,11 +175,20 @@ namespace WindowsFormsApplication1
                 {
                     extra_dict["studytype"] = row.Cells[1].Value.ToString();
                 }
+                else if (row.Cells[0].Value.ToString().StartsWith("api"))
+                {
+                    extra_dict["api"] = row.Cells[1].Value.ToString();
+                }
+                else if (row.Cells[0].Value.ToString().StartsWith("API_"))
+                {
+                    api_con_dict[row.Cells[1].Value.ToString()] = row.Cells[2].Value.ToString();
+                }
             }
             result_dict["compound"] = compound_dict;
             result_dict["time"] = time_dict;
             result_dict["formulation"] = formulation_dict;
             result_dict["layer"] = layer_dict;
+            result_dict["api_con"] = api_con_dict;
             result_dict["extra"] = extra_dict;
             return result_dict;
         }
@@ -344,7 +360,8 @@ namespace WindowsFormsApplication1
             new_table.Height = 700;
             new_table.Width = 700;
             int replica_int = Int32.Parse(param_dict["extra"]["replica"]);
-            new_table.ColumnCount = 1 + replica_int + 4;
+            int api_int = Int32.Parse(param_dict["extra"]["api"]);
+            new_table.ColumnCount = 1 + replica_int + 4+ api_int;
             new_table.Columns[0].Name = " ";
             new_table.Columns[0].Width = 200;
             new_table.Rows.Add("Project Name:");
@@ -362,7 +379,18 @@ namespace WindowsFormsApplication1
                 api_list.Add(kv.Value);
             }
             new_table.Rows.Add(api_list.ToArray());
-            new_table.Rows.Add("", "", "API Concentration", " Dosed Amount / mg", "Dosed Amount for Each Cell/ mg", " Applied Amount of API / ng");
+            List<string> formualation_header = new List<string> { "", "" };
+            for(int i = 1; i <= api_int; i++)
+            {
+                formualation_header.Add("API Concentration "+i.ToString());
+            }
+           formualation_header.Add(" Dosed Amount / mg");
+           formualation_header.Add( "Dosed Amount for Each Cell/ mg");
+            for(int i=1; i <= api_int; i++)
+            {
+                formualation_header.Add(" Applied Amount of API"+i.ToString()+" / ng");
+            }
+            new_table.Rows.Add(formualation_header.ToArray());
             int count = 0;
             foreach (KeyValuePair<string, List<string>> kv in formulation_extra_dict)
             {
@@ -379,38 +407,30 @@ namespace WindowsFormsApplication1
 
 
                 float temp1, temp2, temp3;
-                rowdata.Add(kv.Key.ToString());
+                rowdata.Add(param_dict["formulation"][kv.Key.ToString()]);
                 float dose_before, dose_after, api_con;
-                float.TryParse(kv.Value[1].ToString(), out dose_before);
-                float.TryParse(kv.Value[2].ToString(), out dose_after);
-                if (kv.Value[0].ToString().Contains(","))
+                float.TryParse(kv.Value[0].ToString(), out dose_before);
+                float.TryParse(kv.Value[1].ToString(), out dose_after);
+              //  if (kv.Value[0].ToString().Contains(","))
+              //  {
+                    //string[] api_con_list = kv.Value[0].Split(',');
+                    //string api_con_result="";
+                foreach(KeyValuePair<string,string> kv2 in param_dict["api_con"])
                 {
-                    string[] api_con_list = kv.Value[0].Split(',');
-                    string api_con_result="";
-                    rowdata.Add(kv.Value[0].ToString());
-                    temp1 = (dose_before - dose_after) * 1000;
-                    rowdata.Add(temp1.ToString());
-                    temp2 = temp1 / replica_int;
-                    mass_balance_dict[kv.Key.ToString()] = temp2;
-                    rowdata.Add(temp2.ToString());
-                    foreach (string api_string in api_con_list)
-                    {
-                        string trimed = api_string.Trim();
-                        float.TryParse(trimed, out api_con);
-                        temp3 = api_con * temp2 * 1000000;
-                        if (api_con_result == "")
-                        {
-                            api_con_result = temp3.ToString();
-                        }
-                        else
-                        {
-                            api_con_result = api_con_result + "," + temp3.ToString();
-                        }
-                        
-
-                    }
-                    rowdata.Add(api_con_result);
+                    rowdata.Add(kv2.Value);
                 }
+                temp1 = (dose_before - dose_after) * 1000;
+                rowdata.Add(temp1.ToString());
+                temp2 = temp1 / replica_int;
+                mass_balance_dict[kv.Key.ToString()] = temp2;
+                rowdata.Add(temp2.ToString());
+                foreach (KeyValuePair<string, string> kv2 in param_dict["api_con"])
+                {
+                    float.TryParse(kv2.Value.ToString(), out api_con);
+                    temp3 = api_con * temp2 * 1000000;
+                    rowdata.Add(temp3.ToString());
+                }
+             /*   }
                 else
                 {
                     float.TryParse(kv.Value[0].ToString(), out api_con);
@@ -422,7 +442,7 @@ namespace WindowsFormsApplication1
                     rowdata.Add(temp2.ToString());
                     temp3 = api_con * temp2 * 1000000;
                     rowdata.Add(temp3.ToString());
-                }
+                }*/
                 new_table.Rows.Add(rowdata.ToArray());
 
             }
@@ -434,7 +454,7 @@ namespace WindowsFormsApplication1
             api_list.Add("Time point");
             foreach (KeyValuePair<string, string> kv in param_dict["time"])
             {
-                api_list.Add("Time Point " + kv.Value.ToString());
+                api_list.Add( kv.Value.ToString());
             }
             new_table.Rows.Add(api_list.ToArray());
             new_table.Rows.Add("Replicate", replica_int.ToString(), "Time Points", param_dict["time"].Count().ToString());
@@ -554,7 +574,7 @@ namespace WindowsFormsApplication1
                     local_volume = receptor_volume_dict[r_dict.Key];
                     c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + "R" + r_dict.Value;
                     row_data = new List<string>();
-                    row_data.Add("receptor R" + r_dict.Value + " hr");
+                    row_data.Add("receptor at " + r_dict.Value + " hr");
                     for (int i = 1; i <= Int32.Parse(param_dict["extra"]["replica"]); i++)
                     {
 
@@ -707,7 +727,7 @@ namespace WindowsFormsApplication1
                     local_volume = receptor_volume_dict[r_dict.Key];
                     c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + "R" + r_dict.Value;
                     row_data = new List<string>();
-                    row_data.Add("receptor R" + r_dict.Value + " hr");
+                    row_data.Add("receptor at " + r_dict.Value + " hr");
                     for (int i = 1; i <= Int32.Parse(param_dict["extra"]["replica"]); i++)
                     {
 
@@ -755,6 +775,7 @@ namespace WindowsFormsApplication1
                         row_data = append_data(row_data);
                         local_table.Rows.Add(row_data.ToArray());
                     }
+                    local_table.Rows.Add("");
                 }
 
                 //foreach (KeyValuePair<string, string> t_dict in param_dict["time"])
@@ -989,10 +1010,18 @@ namespace WindowsFormsApplication1
                 }
 
             }
+            add_total_mass();
             local_tabpage.Controls.Add(output_report_table);
             tabControl1.TabPages.Add(local_tabpage);
             tabControl1.Refresh();
             tabControl1.SizeMode = TabSizeMode.FillToRight;
+        }
+
+
+        private void add_total_mass() {
+            float total = mass_balance_dict.Values.Sum();
+            output_report_table.Rows.Add("Total Mass Balance", total.ToString());
+
         }
 
 
@@ -1006,7 +1035,7 @@ namespace WindowsFormsApplication1
                 {
                     continue;
                 }
-                this.table.Rows.Add(row[0], row[1], row[2], row[3], row[4], row[5], row[6]);
+                this.table.Rows.Add(row[0], row[1], row[2], row[3], row[4], row[5]);
             }
         }
 

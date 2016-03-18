@@ -44,18 +44,19 @@
             this.study_type_2 = new System.Windows.Forms.RadioButton();
             this.study_type_1 = new System.Windows.Forms.RadioButton();
             this.table = new System.Windows.Forms.DataGridView();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.volume = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.generate_table = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.button1 = new System.Windows.Forms.Button();
             this.button_load = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.api_count_box = new System.Windows.Forms.TextBox();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.volume = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.table)).BeginInit();
             this.SuspendLayout();
             // 
@@ -165,7 +166,7 @@
             // 
             // button_start
             // 
-            this.button_start.Location = new System.Drawing.Point(19, 235);
+            this.button_start.Location = new System.Drawing.Point(19, 260);
             this.button_start.Name = "button_start";
             this.button_start.Size = new System.Drawing.Size(103, 23);
             this.button_start.TabIndex = 13;
@@ -207,55 +208,18 @@
             this.Column2,
             this.Column3,
             this.volume,
-            this.Column4,
             this.Column5,
             this.Column6});
-            this.table.Location = new System.Drawing.Point(12, 264);
+            this.table.Location = new System.Drawing.Point(12, 289);
             this.table.Name = "table";
             this.table.RowTemplate.Height = 23;
-            this.table.Size = new System.Drawing.Size(366, 461);
+            this.table.Size = new System.Drawing.Size(366, 436);
             this.table.TabIndex = 17;
             this.table.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.table_CellContentClick);
             // 
-            // Column1
-            // 
-            this.Column1.HeaderText = "Name";
-            this.Column1.Name = "Column1";
-            // 
-            // Column2
-            // 
-            this.Column2.HeaderText = "Index";
-            this.Column2.Name = "Column2";
-            this.Column2.Width = 50;
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "value";
-            this.Column3.Name = "Column3";
-            // 
-            // volume
-            // 
-            this.volume.HeaderText = "Volume";
-            this.volume.Name = "volume";
-            // 
-            // Column4
-            // 
-            this.Column4.HeaderText = "API Concentration";
-            this.Column4.Name = "Column4";
-            // 
-            // Column5
-            // 
-            this.Column5.HeaderText = "Dosed Before";
-            this.Column5.Name = "Column5";
-            // 
-            // Column6
-            // 
-            this.Column6.HeaderText = "Dosed After";
-            this.Column6.Name = "Column6";
-            // 
             // generate_table
             // 
-            this.generate_table.Location = new System.Drawing.Point(128, 235);
+            this.generate_table.Location = new System.Drawing.Point(128, 260);
             this.generate_table.Name = "generate_table";
             this.generate_table.Size = new System.Drawing.Size(104, 23);
             this.generate_table.TabIndex = 18;
@@ -274,7 +238,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(238, 235);
+            this.button1.Location = new System.Drawing.Point(238, 260);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(112, 23);
             this.button1.TabIndex = 20;
@@ -302,11 +266,61 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click_1);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(21, 225);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(59, 12);
+            this.label2.TabIndex = 23;
+            this.label2.Text = "API count";
+            // 
+            // api_count_box
+            // 
+            this.api_count_box.Location = new System.Drawing.Point(122, 225);
+            this.api_count_box.Name = "api_count_box";
+            this.api_count_box.Size = new System.Drawing.Size(100, 21);
+            this.api_count_box.TabIndex = 24;
+            this.api_count_box.Text = "1";
+            // 
+            // Column1
+            // 
+            this.Column1.HeaderText = "Name";
+            this.Column1.Name = "Column1";
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "Index";
+            this.Column2.Name = "Column2";
+            this.Column2.Width = 50;
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "value";
+            this.Column3.Name = "Column3";
+            // 
+            // volume
+            // 
+            this.volume.HeaderText = "Volume";
+            this.volume.Name = "volume";
+            // 
+            // Column5
+            // 
+            this.Column5.HeaderText = "Dosed Before";
+            this.Column5.Name = "Column5";
+            // 
+            // Column6
+            // 
+            this.Column6.HeaderText = "Dosed After";
+            this.Column6.Name = "Column6";
+            // 
             // Excel_Gen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1188, 753);
+            this.Controls.Add(this.api_count_box);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button_load);
             this.Controls.Add(this.button1);
@@ -359,12 +373,13 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button_load;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox api_count_box;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn volume;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
     }
