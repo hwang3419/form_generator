@@ -885,9 +885,9 @@ namespace WindowsFormsApplication1
                     xlWorkSheet.get_Range("A1").Select();
                 }
 
+                var index_list = output_dict.OrderBy(x => x.Value);
 
-
-                foreach (KeyValuePair<string, DataGridView> entry in output_dict)
+                foreach (KeyValuePair<string, DataGridView> entry in output_dict.OrderBy(key => key.Key).Reverse())
                 {
                     copyAlltoClipboard(entry.Value);
                     collection[count] = xlexcel.Worksheets.Add();
