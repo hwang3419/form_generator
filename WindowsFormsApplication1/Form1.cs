@@ -885,13 +885,24 @@ namespace WindowsFormsApplication1
                     xlWorkSheet.get_Range("A1").Select();
                 }
 
-                var index_list = output_dict.OrderBy(x => x.Value);
+                Dictionary<int, DataGridView> output_dict_int = new Dictionary<int, DataGridView>();
 
-                foreach (KeyValuePair<string, DataGridView> entry in output_dict.OrderBy(key => key.Key).Reverse())
+                foreach (KeyValuePair<string, DataGridView> entry in output_dict) {
+                    if (entry.Key.StartsWith("Formulation"))
+                    {
+                        int index_key = 0;
+                        Int32.TryParse(entry.Key.Substring(11), out index_key);
+                        output_dict_int[index_key] = entry.Value;
+                    }
+
+                }
+
+
+                foreach (KeyValuePair<int, DataGridView> entry in output_dict_int.OrderBy(key => key.Key).Reverse())
                 {
                     copyAlltoClipboard(entry.Value);
                     collection[count] = xlexcel.Worksheets.Add();
-                    collection[count].Name = entry.Key;
+                    collection[count].Name = "Formulation"+entry.Key.ToString();
                     xlWorkSheet = collection[count];
                     // Paste clipboard results to worksheet range
                     Excel.Range CR = (Excel.Range)xlWorkSheet.Cells[1, 1];
