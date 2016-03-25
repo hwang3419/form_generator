@@ -420,15 +420,15 @@ namespace WindowsFormsApplication1
                     rowdata.Add(kv2.Value);
                 }
                 temp1 = (dose_before - dose_after) * 1000;
-                rowdata.Add(temp1.ToString());
+                rowdata.Add(temp1.ToString("0.0"));
                 temp2 = temp1 / replica_int;
                 mass_balance_dict[kv.Key.ToString()] = temp2;
-                rowdata.Add(temp2.ToString());
+                rowdata.Add(temp2.ToString("0.0"));
                 foreach (KeyValuePair<string, string> kv2 in param_dict["api_con"])
                 {
                     float.TryParse(kv2.Value.ToString(), out api_con);
                     temp3 = api_con * temp2 * 1000000;
-                    rowdata.Add(temp3.ToString());
+                    rowdata.Add(temp3.ToString("0.0"));
                 }
              /*   }
                 else
@@ -505,9 +505,9 @@ namespace WindowsFormsApplication1
             }
             std = Math.Pow(stdsum / length, 0.5);
             data.Add("");
-            data.Add(avg.ToString());
-            data.Add(std.ToString());
-            data.Add((std / avg).ToString());
+            data.Add(avg.ToString("0.0"));
+            data.Add(std.ToString("0.0"));
+            data.Add((std / avg).ToString("0.0"));
             return data;
         }
         private string get_formulation_name(string sheetid)
@@ -667,8 +667,8 @@ namespace WindowsFormsApplication1
                 }
                 else
                 {
-                    local_table.Rows.Add("sum", sum_average_float.ToString());
-                    local_table.Rows.Add("mass balance", (sum_average_float / mass_balance_dict[formulation_id]).ToString());
+                    local_table.Rows.Add("sum", sum_average_float.ToString("0.0"));
+                    local_table.Rows.Add("mass balance");//, (sum_average_float / mass_balance_dict[formulation_id]).ToString());
                 }
                 local_table.Rows.Add("");
             }
@@ -1030,8 +1030,8 @@ namespace WindowsFormsApplication1
 
 
         private void add_total_mass() {
-            float total = mass_balance_dict.Values.Sum();
-            output_report_table.Rows.Add("Total Mass Balance", total.ToString());
+            //float total = mass_balance_dict.Values.Sum();
+            output_report_table.Rows.Add("Total Mass Balance");//, total.ToString());
 
         }
 
