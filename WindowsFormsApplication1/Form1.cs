@@ -24,11 +24,13 @@ namespace WindowsFormsApplication1
         public Dictionary<string, string> sub_param_dict;
         public Dictionary<string, Dictionary<string, string>> param_dict;
         public Dictionary<string, DataGridView> output_dict;
+        public Dictionary<string, DataGridView> label2_output_dict;
         public Dictionary<string, float> layer_volume_dict;
         public Dictionary<string, float> receptor_volume_dict;
         public DataGridView output_report_table;
         public Dictionary<string, List<string>> formulation_extra_dict;
         public Dictionary<string, float> mass_balance_dict;
+        public Dictionary<string, List<string>> label2_dict;
         public Excel_Gen()
         {
             InitializeComponent();
@@ -86,7 +88,7 @@ namespace WindowsFormsApplication1
             count = Int32.Parse(this.time_point.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Time Point" + i.ToString(), i, i * 2, 1, 0,  0);
+                this.table.Rows.Add("Time Point" + i.ToString(), i, i * 2, 1, 0, 0);
             }
             count = Int32.Parse(this.layer.Text.ToString());
             for (int i = 1; i <= count; i++)
@@ -161,7 +163,7 @@ namespace WindowsFormsApplication1
                 else if (row.Cells[0].Value.ToString().StartsWith("Formulation"))
                 {
                     formulation_dict[row.Cells[1].Value.ToString()] = row.Cells[2].Value.ToString();
-                    formulation_extra_dict[row.Cells[1].Value.ToString()] = new List<string> { row.Cells[4].Value.ToString(), row.Cells[5].Value.ToString()};
+                    formulation_extra_dict[row.Cells[1].Value.ToString()] = new List<string> { row.Cells[4].Value.ToString(), row.Cells[5].Value.ToString() };
                 }
                 else if (row.Cells[0].Value.ToString().StartsWith("Project"))
                 {
@@ -227,7 +229,9 @@ namespace WindowsFormsApplication1
             local_table.Height = 700;
             local_table.Width = 700;
             local_tabpage.Text = "Formulation" + formulation_entry.Key;
-
+            List<string> internal_label = new List<string>();
+            List<string> external_label = new List<string>();
+            List<string> layer_label = new List<string>();
 
             foreach (KeyValuePair<string, string> time_entry in param["time"])
             {
@@ -239,7 +243,8 @@ namespace WindowsFormsApplication1
                 {
                     ex_count = i + ex_start;
                     local_table.Rows.Add(inlabel + "-" + i, exlabel + ex_count.ToString());
-
+                    internal_label.Add(inlabel + "-" + i);
+                    external_label.Add(exlabel + ex_count.ToString());
                 }
                 ex_start = ex_start + replica_int * formulation_int;
             }
@@ -253,11 +258,16 @@ namespace WindowsFormsApplication1
                 {
                     ex_count = i + ex_start;
                     local_table.Rows.Add(inlabel + "-" + i, exlabel + ex_count.ToString());
+                    internal_label.Add(inlabel + "-" + i);
+                    external_label.Add(exlabel + ex_count.ToString());
+                    layer_label.Add(inlabel + "-" + i);
                 }
                 ex_start = ex_start + replica_int * formulation_int;
             }
             output_dict[local_tabpage.Text] = local_table;
             local_tabpage.Controls.Add(local_table);
+            internal_label = internal_label.Concat(layer_label).Concat(external_label).ToList();
+            label2_dict[local_tabpage.Text] = internal_label;
             return local_tabpage;
         }
 
@@ -361,7 +371,7 @@ namespace WindowsFormsApplication1
             new_table.Width = 700;
             int replica_int = Int32.Parse(param_dict["extra"]["replica"]);
             int api_int = Int32.Parse(param_dict["extra"]["api"]);
-            new_table.ColumnCount = 1 + replica_int + 4+ api_int;
+            new_table.ColumnCount = 1 + replica_int + 4 + api_int;
             new_table.Columns[0].Name = " ";
             new_table.Columns[0].Width = 200;
             new_table.Rows.Add("Project Name:");
@@ -380,15 +390,15 @@ namespace WindowsFormsApplication1
             }
             new_table.Rows.Add(api_list.ToArray());
             List<string> formualation_header = new List<string> { "", "" };
-            for(int i = 1; i <= api_int; i++)
+            for (int i = 1; i <= api_int; i++)
             {
-                formualation_header.Add("API Concentration "+i.ToString());
+                formualation_header.Add("API Concentration " + i.ToString());
             }
-           formualation_header.Add(" Dosed Amount / mg");
-           formualation_header.Add( "Dosed Amount for Each Cell/ mg");
-            for(int i=1; i <= api_int; i++)
+            formualation_header.Add(" Dosed Amount / mg");
+            formualation_header.Add("Dosed Amount for Each Cell/ mg");
+            for (int i = 1; i <= api_int; i++)
             {
-                formualation_header.Add(" Applied Amount of API"+i.ToString()+" / ng");
+                formualation_header.Add(" Applied Amount of API" + i.ToString() + " / ng");
             }
             new_table.Rows.Add(formualation_header.ToArray());
             int count = 0;
@@ -411,11 +421,11 @@ namespace WindowsFormsApplication1
                 float dose_before, dose_after, api_con;
                 float.TryParse(kv.Value[0].ToString(), out dose_before);
                 float.TryParse(kv.Value[1].ToString(), out dose_after);
-              //  if (kv.Value[0].ToString().Contains(","))
-              //  {
-                    //string[] api_con_list = kv.Value[0].Split(',');
-                    //string api_con_result="";
-                foreach(KeyValuePair<string,string> kv2 in param_dict["api_con"])
+                //  if (kv.Value[0].ToString().Contains(","))
+                //  {
+                //string[] api_con_list = kv.Value[0].Split(',');
+                //string api_con_result="";
+                foreach (KeyValuePair<string, string> kv2 in param_dict["api_con"])
                 {
                     rowdata.Add(kv2.Value);
                 }
@@ -430,19 +440,19 @@ namespace WindowsFormsApplication1
                     temp3 = api_con * temp2 * 1000000;
                     rowdata.Add(temp3.ToString("0.0"));
                 }
-             /*   }
-                else
-                {
-                    float.TryParse(kv.Value[0].ToString(), out api_con);
-                    rowdata.Add(api_con.ToString());
-                    temp1 = (dose_before - dose_after) * 1000;
-                    rowdata.Add(temp1.ToString());
-                    temp2 = temp1 / replica_int;
-                    mass_balance_dict[kv.Key.ToString()] = temp2;
-                    rowdata.Add(temp2.ToString());
-                    temp3 = api_con * temp2 * 1000000;
-                    rowdata.Add(temp3.ToString());
-                }*/
+                /*   }
+                   else
+                   {
+                       float.TryParse(kv.Value[0].ToString(), out api_con);
+                       rowdata.Add(api_con.ToString());
+                       temp1 = (dose_before - dose_after) * 1000;
+                       rowdata.Add(temp1.ToString());
+                       temp2 = temp1 / replica_int;
+                       mass_balance_dict[kv.Key.ToString()] = temp2;
+                       rowdata.Add(temp2.ToString());
+                       temp3 = api_con * temp2 * 1000000;
+                       rowdata.Add(temp3.ToString());
+                   }*/
                 new_table.Rows.Add(rowdata.ToArray());
 
             }
@@ -454,7 +464,7 @@ namespace WindowsFormsApplication1
             api_list.Add("Time point");
             foreach (KeyValuePair<string, string> kv in param_dict["time"])
             {
-                api_list.Add( kv.Value.ToString());
+                api_list.Add(kv.Value.ToString());
             }
             new_table.Rows.Add(api_list.ToArray());
             new_table.Rows.Add("Replicate", replica_int.ToString(), "Time Points", param_dict["time"].Count().ToString());
@@ -796,6 +806,7 @@ namespace WindowsFormsApplication1
 
             tabControl1.TabPages.Clear();
             output_dict = new Dictionary<string, DataGridView>();
+            label2_dict = new Dictionary<string, List<string>>();
             var param_result_dict = load_params();
             if (get_study_type() == 1)
             {
@@ -887,7 +898,8 @@ namespace WindowsFormsApplication1
 
                 Dictionary<int, DataGridView> output_dict_int = new Dictionary<int, DataGridView>();
 
-                foreach (KeyValuePair<string, DataGridView> entry in output_dict) {
+                foreach (KeyValuePair<string, DataGridView> entry in output_dict)
+                {
                     if (entry.Key.StartsWith("Formulation"))
                     {
                         int index_key = 0;
@@ -902,7 +914,7 @@ namespace WindowsFormsApplication1
                 {
                     copyAlltoClipboard(entry.Value);
                     collection[count] = xlexcel.Worksheets.Add();
-                    collection[count].Name = "Formulation"+entry.Key.ToString();
+                    collection[count].Name = "Formulation" + entry.Key.ToString();
                     xlWorkSheet = collection[count];
                     // Paste clipboard results to worksheet range
                     Excel.Range CR = (Excel.Range)xlWorkSheet.Cells[1, 1];
@@ -1029,7 +1041,8 @@ namespace WindowsFormsApplication1
         }
 
 
-        private void add_total_mass() {
+        private void add_total_mass()
+        {
             //float total = mass_balance_dict.Values.Sum();
             output_report_table.Rows.Add("Total Mass Balance");//, total.ToString());
 
@@ -1177,10 +1190,111 @@ namespace WindowsFormsApplication1
                 GC.Collect();
             }
         }
+        private DataGridView create_new_table2_template()
+        {
+            var new_table = new DataGridView();
+            new_table.ColumnCount = 1;
+            new_table.Columns[0].Name = "Sample ID";
+            new_table.Columns[0].Width = 200;
+            return new_table;
+        }
 
         private void button3_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button3_Click_2(object sender, EventArgs e)
+        {
+            this.tabControl1.TabPages.Clear();
+            label2_output_dict = new Dictionary<string, DataGridView>();
+
+            foreach (KeyValuePair<string, List<string>> entry in label2_dict)
+            {
+                var local_table = create_new_table2_template();
+                var local_tabpage = new TabPage();
+                for (int i = 0; i < entry.Value.Count(); i++)
+                {
+                    local_table.Rows.Add(entry.Value[i]);
+                }
+                label2_output_dict[entry.Key] = local_table;
+                local_tabpage.Controls.Add(local_table);
+                this.tabControl1.TabPages.Insert(tabControl1.TabPages.Count, local_tabpage);
+            }
+            //for(int i = 0; i < order_list.Count(); i++) { }
+
+            tabControl1.Refresh();
+            tabControl1.SizeMode = TabSizeMode.FillToRight;
+
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Excel Documents (*.xls)|*.xls";
+            sfd.FileName = "label2.xls";
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                // Copy DataGridView results to clipboard
+                object misValue = System.Reflection.Missing.Value;
+                Excel.Application xlexcel = new Excel.Application();
+
+                xlexcel.DisplayAlerts = false; // Without this you will get two confirm overwrite prompts
+                Excel.Workbook xlWorkBook = xlexcel.Workbooks.Add(misValue);
+                Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+                int count = 1;
+
+                var collection = new Microsoft.Office.Interop.Excel.Worksheet[label2_dict.LongCount()+2];
+                // save param table
+
+                Dictionary<int, DataGridView> output_dict_int = new Dictionary<int, DataGridView>();
+
+                foreach (KeyValuePair<string, DataGridView> entry in label2_output_dict)
+                {
+                    if (entry.Key.StartsWith("Formulation"))
+                    {
+                        int index_key = 0;
+                        Int32.TryParse(entry.Key.Substring(11), out index_key);
+                        output_dict_int[index_key] = entry.Value;
+                    }
+
+                }
+
+
+                foreach (KeyValuePair<int, DataGridView> entry in output_dict_int.OrderBy(key => key.Key).Reverse())
+                {
+                    copyAlltoClipboard(entry.Value);
+                    collection[count] = xlexcel.Worksheets.Add();
+                    collection[count].Name = "Formulation" + entry.Key.ToString();
+                    xlWorkSheet = collection[count];
+                    // Paste clipboard results to worksheet range
+                    Excel.Range CR = (Excel.Range)xlWorkSheet.Cells[1, 1];
+                    CR.Select();
+                    xlWorkSheet.PasteSpecial(CR, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, true);
+                    // For some reason column A is always blank in the worksheet. ¯\_(ツ)_/¯
+                    // Delete blank column A and select cell A1
+                    Excel.Range delRng = xlWorkSheet.get_Range("A:A").Cells;
+                    delRng.Delete(Type.Missing);
+                    xlWorkSheet.get_Range("A1").Select();
+                    count += 1;
+                }
+
+
+
+
+                // Save the excel file under the captured location from the SaveFileDialog
+                xlWorkBook.SaveAs(sfd.FileName, Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
+                xlexcel.DisplayAlerts = true;
+                xlWorkBook.Close(false, misValue, misValue);
+                xlexcel.Quit();
+                xlWorkSheet = null;
+                xlWorkBook = null;
+                xlexcel = null;
+                //reaseObject(xlWorkSheet);
+                //releaseObject(xlWorkBook);
+                //releaseObject(xlexcel);
+
+                // Clear Clipboard and DataGridView selection
+                Clipboard.Clear();
+                GC.Collect();
+            }
         }
     }
 }
