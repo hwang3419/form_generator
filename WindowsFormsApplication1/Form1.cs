@@ -31,6 +31,7 @@ namespace WindowsFormsApplication1
         public Dictionary<string, List<string>> formulation_extra_dict;
         public Dictionary<string, float> mass_balance_dict;
         public Dictionary<string, List<string>> label2_dict;
+        public Dictionary<string, Dictionary<string, Dictionary<string, List<string>>>> summary_dict;
         public Excel_Gen()
         {
             InitializeComponent();
@@ -579,6 +580,14 @@ namespace WindowsFormsApplication1
                 local_table.Rows.Add("API", c_dict.Value);
                 local_table.Rows.Add(formulation_realname);
                 last_row_data = new List<string>();
+                if (!summary_dict.ContainsKey(c_dict.Value))
+                {
+                    summary_dict[c_dict.Value] = new Dictionary<string, Dictionary<string, List<string>>>();
+                }
+                if (!summary_dict[c_dict.Value].ContainsKey(sheet_key))
+                {
+                    summary_dict[c_dict.Value][sheet_key] = new Dictionary<string, List<string>>();
+                }
                 foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
                 {
                     local_volume = receptor_volume_dict[r_dict.Key];
@@ -628,6 +637,7 @@ namespace WindowsFormsApplication1
                         last_row_data = row_data.ToList();
                     }
                     row_data = append_data(row_data);
+                    summary_dict[c_dict.Value][sheet_key]["receptor at " + r_dict.Value + " hr"] = row_data.Skip(row_data.Count - 3).ToList();
                     local_table.Rows.Add(row_data.ToArray());
                     sum_average = row_data[row_data.Count() - 3];
                     float.TryParse(sum_average, out sum_average_float);
@@ -656,6 +666,7 @@ namespace WindowsFormsApplication1
 
                     }
                     row_data = append_data(row_data);
+                    summary_dict[c_dict.Value][sheet_key][l_dict.Value + " at  24hr"] = row_data.Skip(row_data.Count - 3).ToList();
                     local_table.Rows.Add(row_data.ToArray());
                     float result_float;
                     sum_average = row_data[row_data.Count() - 3];
@@ -732,6 +743,14 @@ namespace WindowsFormsApplication1
             {
                 local_table.Rows.Add("API", c_dict.Value);
                 local_table.Rows.Add(formulation_realname);
+                if (!summary_dict.ContainsKey(c_dict.Value))
+                {
+                    summary_dict[c_dict.Value] = new Dictionary<string, Dictionary<string, List<string>>>();
+                }
+                if (!summary_dict[c_dict.Value].ContainsKey(sheet_key))
+                {
+                    summary_dict[c_dict.Value][sheet_key] = new Dictionary<string, List<string>>();
+                }
                 foreach (KeyValuePair<string, string> r_dict in param_dict["time"])
                 {
                     local_volume = receptor_volume_dict[r_dict.Key];
@@ -755,6 +774,7 @@ namespace WindowsFormsApplication1
 
                     }
                     row_data = append_data(row_data);
+                    summary_dict[c_dict.Value][sheet_key]["receptor at " + r_dict.Value + " hr"] = row_data.Skip(row_data.Count - 3).ToList();
                     local_table.Rows.Add(row_data.ToArray());
 
 
@@ -783,6 +803,7 @@ namespace WindowsFormsApplication1
 
                         }
                         row_data = append_data(row_data);
+                        summary_dict[c_dict.Value][sheet_key][l_dict.Value + " at  " + r_dict.Value.ToString() + "hr"] = row_data.Skip(row_data.Count - 3).ToList();
                         local_table.Rows.Add(row_data.ToArray());
                     }
                     local_table.Rows.Add("");
@@ -988,6 +1009,7 @@ namespace WindowsFormsApplication1
             if (openfile1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string filename = openfile1.InitialDirectory + openfile1.FileName;
+                summary_dict = new Dictionary<string, Dictionary<string, Dictionary<string, List<string>>>>();
                 ReadXls(filename);
                 render_param_table();
                 param_dict = load_params();
@@ -1034,12 +1056,51 @@ namespace WindowsFormsApplication1
 
             }
             add_total_mass();
+            add_average_table();
+            
             local_tabpage.Controls.Add(output_report_table);
             tabControl1.TabPages.Add(local_tabpage);
             tabControl1.Refresh();
             tabControl1.SizeMode = TabSizeMode.FillToRight;
         }
+        
+        private void add_average_table()
+        {
+            output_report_table.Rows.Add("");
+            output_report_table.Rows.Add("");
+            output_report_table.Rows.Add("");
+            foreach (KeyValuePair<string, Dictionary<string,Dictionary<string,List<string>>>> formulation in summary_dict)
+            {
+                output_report_table.Rows.Add("Average amount of compound "+ formulation.Key+" in receptor and each layer/ng");
+                bool has_header = false;
+                List<string> header = new List<string>();
+                foreach (KeyValuePair<string, Dictionary<string, List<string>>> row in formulation.Value.OrderBy(key => key.Key))
+                {
+                    if (!has_header)
+                    {
+                        
+                        header = row.Value.Keys.ToList();
+                        header.Sort();
+                        header.Insert(0, "");
+                        output_report_table.Rows.Add(header.ToArray());
+                        has_header = true;
+                    }
+                    List<string> row_data = new List<string>();
+                    row_data.Add(row.Key);
+                    foreach (string header_item in header)
+                    {
+                        if (row.Value.Keys.Contains(header_item))
+                        {
+                            row_data.Add(row.Value[header_item][0]);
+                        }
+                        
+                    }
+                    
+                    output_report_table.Rows.Add(row_data.ToArray());
+                }
 
+            }
+        }
 
         private void add_total_mass()
         {
