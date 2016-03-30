@@ -540,6 +540,7 @@ namespace WindowsFormsApplication1
 
             string formulation_id = sheet_key.Remove(0, 11);
             string formulation_realname = get_formulation_name(sheet_key);
+            table_header_global = new List<string>();
             DataGridView local_table;
             if (output_report_table.RowCount < 1)
             {
@@ -602,6 +603,11 @@ namespace WindowsFormsApplication1
                     c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + "R" + r_dict.Value;
                     row_data = new List<string>();
                     row_data.Add("receptor at " + r_dict.Value + " hr");
+                    if (!table_header_global.Contains(row_data[0]))
+                    {
+                        table_header_global.Add(row_data[0]);
+                    }
+                   
                     for (int i = 1; i <= Int32.Parse(param_dict["extra"]["replica"]); i++)
                     {
 
@@ -656,6 +662,10 @@ namespace WindowsFormsApplication1
                     c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + l_dict.Value;
                     row_data = new List<string>();
                     row_data.Add(l_dict.Value + " at  24hr");
+                    if (!table_header_global.Contains(row_data[0]))
+                    {
+                        table_header_global.Add(row_data[0]);
+                    }
                     for (int i = 1; i <= Int32.Parse(param_dict["extra"]["replica"]); i++)
                     {
                         local_volume = layer_volume_dict[l_dict.Key];
@@ -712,6 +722,7 @@ namespace WindowsFormsApplication1
         {
             string formulation_id = sheet_key.Remove(0, 11);
             string formulation_realname = get_formulation_name(sheet_key);
+            table_header_global = new List<string>();
             DataGridView local_table;
             if (output_report_table.RowCount < 1)
             {
@@ -765,6 +776,10 @@ namespace WindowsFormsApplication1
                     c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + "R" + r_dict.Value;
                     row_data = new List<string>();
                     row_data.Add("receptor at " + r_dict.Value + " hr");
+                    if (!table_header_global.Contains(row_data[0]))
+                    {
+                        table_header_global.Add(row_data[0]);
+                    }
                     for (int i = 1; i <= Int32.Parse(param_dict["extra"]["replica"]); i++)
                     {
 
@@ -792,6 +807,10 @@ namespace WindowsFormsApplication1
                         c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + l_dict.Value + "-" + r_dict.Value;
                         row_data = new List<string>();
                         row_data.Add(l_dict.Value + " at  " + r_dict.Value.ToString() + "hr");
+                        if (!table_header_global.Contains(row_data[0]))
+                        {
+                            table_header_global.Add(row_data[0]);
+                        }
                         for (int i = 1; i <= Int32.Parse(param_dict["extra"]["replica"]); i++)
                         {
 
@@ -1087,15 +1106,16 @@ namespace WindowsFormsApplication1
                     if (!has_header)
                     {
 
-                        header = row.Value.Keys.ToList();
-                        header.Sort();
+                        header = table_header_global.ToList();
+                        //header.Sort();
                         header.Insert(0, "");
+                        //output_report_table.Rows.Add(header.ToArray());
                         output_report_table.Rows.Add(header.ToArray());
                         has_header = true;
                     }
                     List<string> row_data = new List<string>();
                     row_data.Add(row.Key);
-                    foreach (string header_item in header)
+                    foreach (string header_item in table_header_global)
                     {
                         if (row.Value.Keys.Contains(header_item))
                         {
