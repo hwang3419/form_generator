@@ -32,6 +32,7 @@ namespace WindowsFormsApplication1
         public Dictionary<string, float> mass_balance_dict;
         public Dictionary<string, List<string>> label2_dict;
         public Dictionary<string, Dictionary<string, Dictionary<string, List<string>>>> summary_dict;
+        public List<string> table_header_global;
         public Excel_Gen()
         {
             InitializeComponent();
@@ -232,7 +233,7 @@ namespace WindowsFormsApplication1
             local_tabpage.Text = "Formulation" + formulation_entry.Key;
             List<string> internal_label = new List<string>();
             List<string> external_label = new List<string>();
-            List<string> layer_label = new List<string>();
+            List<string> internal_receptor_label = new List<string>();
 
             foreach (KeyValuePair<string, string> time_entry in param["time"])
             {
@@ -246,6 +247,7 @@ namespace WindowsFormsApplication1
                     local_table.Rows.Add(inlabel + "-" + i, exlabel + ex_count.ToString());
                     internal_label.Add(inlabel + "-" + i);
                     external_label.Add(exlabel + ex_count.ToString());
+                    internal_receptor_label.Add(inlabel + "-" + i);
                 }
                 ex_start = ex_start + replica_int * formulation_int;
             }
@@ -261,13 +263,12 @@ namespace WindowsFormsApplication1
                     local_table.Rows.Add(inlabel + "-" + i, exlabel + ex_count.ToString());
                     internal_label.Add(inlabel + "-" + i);
                     external_label.Add(exlabel + ex_count.ToString());
-                    layer_label.Add(inlabel + "-" + i);
                 }
                 ex_start = ex_start + replica_int * formulation_int;
             }
             output_dict[local_tabpage.Text] = local_table;
             local_tabpage.Controls.Add(local_table);
-            internal_label = internal_label.Concat(layer_label).Concat(external_label).ToList();
+            internal_label = internal_label.Concat(internal_receptor_label).Concat(external_label).ToList();
             label2_dict[local_tabpage.Text] = internal_label;
             return local_tabpage;
         }
@@ -304,7 +305,9 @@ namespace WindowsFormsApplication1
             local_table.Height = 700;
             local_table.Width = 700;
             local_tabpage.Text = "Formulation" + formulation_entry.Key;
-
+            List<string> internal_label = new List<string>();
+            List<string> external_label = new List<string>();
+            List<string> internal_receptor_label = new List<string>();
 
             foreach (KeyValuePair<string, string> time_entry in param["time"])
             {
@@ -316,7 +319,9 @@ namespace WindowsFormsApplication1
                 {
                     ex_count = i + ex_start;
                     local_table.Rows.Add(inlabel + "-" + i, exlabel + ex_count.ToString());
-
+                    internal_label.Add(inlabel + "-" + i);
+                    internal_receptor_label.Add(inlabel + "-" + i);
+                    external_label.Add(exlabel + ex_count.ToString());
                 }
                 ex_start = ex_start + replica_int * formulation_int;
             }
@@ -336,13 +341,16 @@ namespace WindowsFormsApplication1
                         ex_start += 1;
                         ex_count = ex_start;
                         local_table.Rows.Add(inlabel + "-" + time_entry.Value + "-" + j, exlabel + ex_count.ToString());
+                        internal_label.Add(inlabel + "-" + time_entry.Value + "-" + j);
+                        external_label.Add(exlabel + ex_count.ToString());
                     }
                     ex_start = ex_start + replica_int * (formulation_int - 1);
                 }
 
 
             }
-
+            internal_label = internal_label.Concat(internal_receptor_label).Concat(external_label).ToList();
+            label2_dict[local_tabpage.Text] = internal_label;
             output_dict[local_tabpage.Text] = local_table;
             local_tabpage.Controls.Add(local_table);
             local_table.AutoResizeRows();
@@ -602,7 +610,7 @@ namespace WindowsFormsApplication1
                         bool isNumber = float.TryParse(query_sheet[c_dict.Value][id_label], out float_result);
                         if (isNumber)
                         {
-                            row_data.Add((float_result * local_volume).ToString());
+                            row_data.Add((float_result * local_volume).ToString("0.0"));
                         }
                         else
                         {
@@ -626,7 +634,7 @@ namespace WindowsFormsApplication1
                             bool isNumber_2 = float.TryParse(last_row_data[i], out float_result_2);
                             if (isNumber_1 && isNumber_2)
                             {
-                                row_data[i] = (float_result_1 + float_result_2).ToString();
+                                row_data[i] = (float_result_1 + float_result_2).ToString("0.0");
                             }
                             else
                             {
@@ -656,7 +664,7 @@ namespace WindowsFormsApplication1
                         bool isNumber = float.TryParse(query_sheet[c_dict.Value][id_label], out float_result);
                         if (isNumber)
                         {
-                            row_data.Add((float_result * local_volume).ToString());
+                            row_data.Add((float_result * local_volume).ToString("0.0"));
                         }
                         else
                         {
@@ -765,7 +773,7 @@ namespace WindowsFormsApplication1
                         bool isNumber = float.TryParse(query_sheet[c_dict.Value][id_label], out float_result);
                         if (isNumber)
                         {
-                            row_data.Add((float_result * local_volume).ToString());
+                            row_data.Add((float_result * local_volume).ToString("0.0"));
                         }
                         else
                         {
@@ -792,7 +800,7 @@ namespace WindowsFormsApplication1
                             bool isNumber = float.TryParse(query_sheet[c_dict.Value][id_label], out float_result);
                             if (isNumber)
                             {
-                                row_data.Add((float_result * local_volume).ToString());
+                                row_data.Add((float_result * local_volume).ToString("0.0"));
                             }
                             else
                             {
@@ -1055,30 +1063,30 @@ namespace WindowsFormsApplication1
                 }
 
             }
-            add_total_mass();
+            //add_total_mass();
             add_average_table();
-            
+
             local_tabpage.Controls.Add(output_report_table);
             tabControl1.TabPages.Add(local_tabpage);
             tabControl1.Refresh();
             tabControl1.SizeMode = TabSizeMode.FillToRight;
         }
-        
+
         private void add_average_table()
         {
             output_report_table.Rows.Add("");
             output_report_table.Rows.Add("");
             output_report_table.Rows.Add("");
-            foreach (KeyValuePair<string, Dictionary<string,Dictionary<string,List<string>>>> formulation in summary_dict)
+            foreach (KeyValuePair<string, Dictionary<string, Dictionary<string, List<string>>>> formulation in summary_dict)
             {
-                output_report_table.Rows.Add("Average amount of compound "+ formulation.Key+" in receptor and each layer/ng");
+                output_report_table.Rows.Add("Average amount of compound " + formulation.Key + " in receptor and each layer/ng");
                 bool has_header = false;
                 List<string> header = new List<string>();
                 foreach (KeyValuePair<string, Dictionary<string, List<string>>> row in formulation.Value.OrderBy(key => key.Key))
                 {
                     if (!has_header)
                     {
-                        
+
                         header = row.Value.Keys.ToList();
                         header.Sort();
                         header.Insert(0, "");
@@ -1093,9 +1101,9 @@ namespace WindowsFormsApplication1
                         {
                             row_data.Add(row.Value[header_item][0]);
                         }
-                        
+
                     }
-                    
+
                     output_report_table.Rows.Add(row_data.ToArray());
                 }
 
@@ -1302,7 +1310,7 @@ namespace WindowsFormsApplication1
                 Excel.Worksheet xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
                 int count = 1;
 
-                var collection = new Microsoft.Office.Interop.Excel.Worksheet[label2_dict.LongCount()+2];
+                var collection = new Microsoft.Office.Interop.Excel.Worksheet[label2_dict.LongCount() + 2];
                 // save param table
 
                 Dictionary<int, DataGridView> output_dict_int = new Dictionary<int, DataGridView>();
