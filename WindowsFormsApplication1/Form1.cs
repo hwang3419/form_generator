@@ -380,7 +380,8 @@ namespace WindowsFormsApplication1
             new_table.Width = 700;
             int replica_int = Int32.Parse(param_dict["extra"]["replica"]);
             int api_int = Int32.Parse(param_dict["extra"]["api"]);
-            new_table.ColumnCount = 1 + replica_int + 4 + api_int;
+            int[] column_count =  {1 + replica_int + 4 + api_int, param_dict["formulation"].Count+2 };
+            new_table.ColumnCount = column_count.Max();
             new_table.Columns[0].Name = " ";
             new_table.Columns[0].Width = 200;
             new_table.Rows.Add("Project Name:");
@@ -661,7 +662,7 @@ namespace WindowsFormsApplication1
                 {
                     c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + l_dict.Value;
                     row_data = new List<string>();
-                    row_data.Add(l_dict.Value + " at  24hr");
+                    row_data.Add(l_dict.Value + " at  "+ param_dict["time"].Values.Max().ToString()+"hr");
                     if (!table_header_global.Contains(row_data[0]))
                     {
                         table_header_global.Add(row_data[0]);
@@ -684,7 +685,7 @@ namespace WindowsFormsApplication1
 
                     }
                     row_data = append_data(row_data);
-                    summary_dict[c_dict.Value][sheet_key][l_dict.Value + " at  24hr"] = row_data.Skip(row_data.Count - 3).ToList();
+                    summary_dict[c_dict.Value][sheet_key][l_dict.Value + " at  " + param_dict["time"].Values.Max().ToString() + "hr"] = row_data.Skip(row_data.Count - 3).ToList();
                     local_table.Rows.Add(row_data.ToArray());
                     float result_float;
                     sum_average = row_data[row_data.Count() - 3];
@@ -775,7 +776,7 @@ namespace WindowsFormsApplication1
                     local_volume = receptor_volume_dict[r_dict.Key];
                     c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + "R" + r_dict.Value;
                     row_data = new List<string>();
-                    row_data.Add("receptor at " + r_dict.Value + " hr");
+                    row_data.Add("Receptor at " + r_dict.Value + " hr");
                     if (!table_header_global.Contains(row_data[0]))
                     {
                         table_header_global.Add(row_data[0]);
@@ -797,7 +798,7 @@ namespace WindowsFormsApplication1
 
                     }
                     row_data = append_data(row_data);
-                    summary_dict[c_dict.Value][sheet_key]["receptor at " + r_dict.Value + " hr"] = row_data.Skip(row_data.Count - 3).ToList();
+                    summary_dict[c_dict.Value][sheet_key]["Receptor at " + r_dict.Value + " hr"] = row_data.Skip(row_data.Count - 3).ToList();
                     local_table.Rows.Add(row_data.ToArray());
 
 
@@ -1098,7 +1099,7 @@ namespace WindowsFormsApplication1
             output_report_table.Rows.Add("");
             foreach (KeyValuePair<string, Dictionary<string, Dictionary<string, List<string>>>> formulation in summary_dict)
             {
-                output_report_table.Rows.Add("Average amount of compound " + formulation.Key + " in receptor and each layer/ng");
+                output_report_table.Rows.Add("Average amount of  " + formulation.Key + " in receptor and each layer/ng");
                 bool has_header = false;
                 List<string> header = new List<string>();
                 foreach (KeyValuePair<string, Dictionary<string, List<string>>> row in formulation.Value.OrderBy(key => key.Key))
@@ -1114,7 +1115,7 @@ namespace WindowsFormsApplication1
                         has_header = true;
                     }
                     List<string> row_data = new List<string>();
-                    row_data.Add(row.Key);
+                    row_data.Add(param_dict["formulation"][row.Key.Substring(11)]);
                     foreach (string header_item in table_header_global)
                     {
                         if (row.Value.Keys.Contains(header_item))
