@@ -33,6 +33,7 @@ namespace WindowsFormsApplication1
         public Dictionary<string, List<string>> label2_dict;
         public Dictionary<string, Dictionary<string, Dictionary<string, List<string>>>> summary_dict;
         public List<string> table_header_global;
+        public Dictionary<string, string> layer_real_name;
         public Excel_Gen()
         {
             InitializeComponent();
@@ -144,6 +145,7 @@ namespace WindowsFormsApplication1
             layer_volume_dict = new Dictionary<string, float>();
             receptor_volume_dict = new Dictionary<string, float>();
             formulation_extra_dict = new Dictionary<string, List<string>>();
+            layer_real_name = new Dictionary<string, string>();
             foreach (DataGridViewRow row in this.table.Rows)
             {
                 if (row.Cells[0].Value == null)
@@ -155,6 +157,7 @@ namespace WindowsFormsApplication1
                 else if (row.Cells[0].Value.ToString().StartsWith("Layer"))
                 {
                     layer_dict[row.Cells[1].Value.ToString()] = row.Cells[2].Value.ToString();
+                    layer_real_name[row.Cells[1].Value.ToString()] = row.Cells[4].Value.ToString();
                     layer_volume_dict[row.Cells[1].Value.ToString()] = float.Parse(row.Cells[3].Value.ToString(), CultureInfo.InvariantCulture.NumberFormat);
                 }
                 else if (row.Cells[0].Value.ToString().StartsWith("Time"))
@@ -603,7 +606,7 @@ namespace WindowsFormsApplication1
                     local_volume = receptor_volume_dict[r_dict.Key];
                     c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + "R" + r_dict.Value;
                     row_data = new List<string>();
-                    row_data.Add("receptor at " + r_dict.Value + " hr");
+                    row_data.Add("Receptor at " + r_dict.Value + " hr");
                     if (!table_header_global.Contains(row_data[0]))
                     {
                         table_header_global.Add(row_data[0]);
@@ -652,7 +655,7 @@ namespace WindowsFormsApplication1
                         last_row_data = row_data.ToList();
                     }
                     row_data = append_data(row_data);
-                    summary_dict[c_dict.Value][sheet_key]["receptor at " + r_dict.Value + " hr"] = row_data.Skip(row_data.Count - 3).ToList();
+                    summary_dict[c_dict.Value][sheet_key]["Receptor at " + r_dict.Value + " hr"] = row_data.Skip(row_data.Count - 3).ToList();
                     local_table.Rows.Add(row_data.ToArray());
                     sum_average = row_data[row_data.Count() - 3];
                     float.TryParse(sum_average, out sum_average_float);
@@ -662,7 +665,7 @@ namespace WindowsFormsApplication1
                 {
                     c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + l_dict.Value;
                     row_data = new List<string>();
-                    row_data.Add(l_dict.Value + " at  "+ param_dict["time"].Values.Max().ToString()+"hr");
+                    row_data.Add(layer_real_name[l_dict.Key] + " at  "+ param_dict["time"].Values.Max().ToString()+"hr");
                     if (!table_header_global.Contains(row_data[0]))
                     {
                         table_header_global.Add(row_data[0]);
@@ -807,7 +810,7 @@ namespace WindowsFormsApplication1
                         local_volume = layer_volume_dict[l_dict.Key];
                         c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + l_dict.Value + "-" + r_dict.Value;
                         row_data = new List<string>();
-                        row_data.Add(l_dict.Value + " at  " + r_dict.Value.ToString() + "hr");
+                        row_data.Add(layer_real_name[l_dict.Key] + " at  " + r_dict.Value.ToString() + "hr");
                         if (!table_header_global.Contains(row_data[0]))
                         {
                             table_header_global.Add(row_data[0]);
