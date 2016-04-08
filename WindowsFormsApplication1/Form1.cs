@@ -530,7 +530,15 @@ namespace WindowsFormsApplication1
             data.Add("");
             data.Add(avg.ToString("0.0"));
             data.Add(std.ToString("0.0"));
-            data.Add((std / avg).ToString("0.0"));
+            if (avg == 0)
+            {
+                data.Add((std * 100 / avg).ToString("0.0"));
+            }
+            else
+            {
+                data.Add((std * 100 / avg).ToString("0.0") + " (%)");
+            }
+            
             return data;
         }
         private string get_formulation_name(string sheetid)
@@ -1271,6 +1279,8 @@ namespace WindowsFormsApplication1
                     Excel.Range delRng = xlWorkSheet.get_Range("A:A").Cells;
                     delRng.Delete(Type.Missing);
                     xlWorkSheet.get_Range("A1").Select();
+                    
+                    xlWorkSheet.Cells.NumberFormat = "0.0";
                 }
                 xlWorkBook.SaveAs(sfd.FileName, Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
                 xlexcel.DisplayAlerts = true;
