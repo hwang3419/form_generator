@@ -44,6 +44,12 @@
             this.study_type_2 = new System.Windows.Forms.RadioButton();
             this.study_type_1 = new System.Windows.Forms.RadioButton();
             this.table = new System.Windows.Forms.DataGridView();
+            this.ColName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.value = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.volume = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DoseBefore = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DoseAfter = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.generate_table = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.button1 = new System.Windows.Forms.Button();
@@ -52,12 +58,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.api_count_box = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
-            this.Name = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.value = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.volume = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DoseBefore = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DoseAfter = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.table)).BeginInit();
             this.SuspendLayout();
             // 
@@ -205,7 +205,7 @@
             // 
             this.table.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.table.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Name,
+            this.ColName,
             this.Index,
             this.value,
             this.volume,
@@ -214,8 +214,45 @@
             this.table.Location = new System.Drawing.Point(12, 289);
             this.table.Name = "table";
             this.table.RowTemplate.Height = 23;
-            this.table.Size = new System.Drawing.Size(1134, 306);
+            this.table.Size = new System.Drawing.Size(944, 306);
             this.table.TabIndex = 17;
+            // 
+            // Name
+            // 
+            this.ColName.HeaderText = "Name";
+            this.ColName.Name = "Name";
+            this.ColName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // Index
+            // 
+            this.Index.HeaderText = "Index";
+            this.Index.Name = "Index";
+            this.Index.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Index.Width = 50;
+            // 
+            // value
+            // 
+            this.value.HeaderText = "value";
+            this.value.Name = "value";
+            this.value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // volume
+            // 
+            this.volume.HeaderText = "Volume";
+            this.volume.Name = "volume";
+            this.volume.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // DoseBefore
+            // 
+            this.DoseBefore.HeaderText = "Dosed Before/ Layer Name";
+            this.DoseBefore.Name = "DoseBefore";
+            this.DoseBefore.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // DoseAfter
+            // 
+            this.DoseAfter.HeaderText = "Dosed After";
+            this.DoseAfter.Name = "DoseAfter";
+            this.DoseAfter.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // generate_table
             // 
@@ -230,10 +267,11 @@
             // tabControl1
             // 
             this.tabControl1.Location = new System.Drawing.Point(356, 12);
-            this.tabControl1.MinimumSize = new System.Drawing.Size(800, 0);
+            this.tabControl1.MinimumSize = new System.Drawing.Size(600, 200);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(800, 261);
+            this.tabControl1.Size = new System.Drawing.Size(600, 271);
+            this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabControl1.TabIndex = 19;
             // 
             // button1
@@ -293,48 +331,11 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click_2);
             // 
-            // Name
-            // 
-            this.Name.HeaderText = "Name";
-            this.Name.Name = "Name";
-            this.Name.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // Index
-            // 
-            this.Index.HeaderText = "Index";
-            this.Index.Name = "Index";
-            this.Index.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Index.Width = 50;
-            // 
-            // value
-            // 
-            this.value.HeaderText = "value";
-            this.value.Name = "value";
-            this.value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // volume
-            // 
-            this.volume.HeaderText = "Volume";
-            this.volume.Name = "volume";
-            this.volume.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // DoseBefore
-            // 
-            this.DoseBefore.HeaderText = "Dosed Before/ Layer Name";
-            this.DoseBefore.Name = "DoseBefore";
-            this.DoseBefore.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
-            // DoseAfter
-            // 
-            this.DoseAfter.HeaderText = "Dosed After";
-            this.DoseAfter.Name = "DoseAfter";
-            this.DoseAfter.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            // 
             // Excel_Gen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1158, 607);
+            this.ClientSize = new System.Drawing.Size(966, 603);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.api_count_box);
             this.Controls.Add(this.label2);
@@ -359,6 +360,7 @@
             this.Controls.Add(this.layer);
             this.Controls.Add(this.time_point);
             this.Controls.Add(this.project_id);
+            this.Name = "Excel_Gen";
             this.Text = "Excel Gen";
             this.Load += new System.EventHandler(this.Excel_Gen_Load);
             ((System.ComponentModel.ISupportInitialize)(this.table)).EndInit();
@@ -393,7 +395,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox api_count_box;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Name;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColName;
         private System.Windows.Forms.DataGridViewTextBoxColumn Index;
         private System.Windows.Forms.DataGridViewTextBoxColumn value;
         private System.Windows.Forms.DataGridViewTextBoxColumn volume;

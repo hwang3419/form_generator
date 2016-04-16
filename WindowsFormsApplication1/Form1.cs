@@ -1094,8 +1094,8 @@ namespace WindowsFormsApplication1
             tabControl1.TabPages.Clear();
             output_report_table = new DataGridView();
             var local_tabpage = new TabPage();
-            local_tabpage.Height = 700;
-            local_tabpage.Width = 700;
+            //local_tabpage.Height = 700;
+            //local_tabpage.Width = 700;
             List<string> fname_list = new List<string>();
             for (int i = 1; i <= param_dict["formulation"].Count(); i++)
             {
@@ -1118,6 +1118,7 @@ namespace WindowsFormsApplication1
             add_average_table();
 
             local_tabpage.Controls.Add(output_report_table);
+            local_tabpage.AutoScroll = true;
             tabControl1.TabPages.Add(local_tabpage);
             tabControl1.Refresh();
             tabControl1.SizeMode = TabSizeMode.FillToRight;
@@ -1421,6 +1422,11 @@ namespace WindowsFormsApplication1
         }
 
         private void table_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void tabPage1_Click(object sender, EventArgs e)
         {
 
         }
