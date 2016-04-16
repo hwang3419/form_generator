@@ -52,12 +52,12 @@
             this.label2 = new System.Windows.Forms.Label();
             this.api_count_box = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Name = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.volume = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DoseBefore = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DoseAfter = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.table)).BeginInit();
             this.SuspendLayout();
             // 
@@ -205,18 +205,17 @@
             // 
             this.table.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.table.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Column1,
-            this.Column2,
-            this.Column3,
+            this.Name,
+            this.Index,
+            this.value,
             this.volume,
-            this.Column5,
-            this.Column6});
+            this.DoseBefore,
+            this.DoseAfter});
             this.table.Location = new System.Drawing.Point(12, 289);
             this.table.Name = "table";
             this.table.RowTemplate.Height = 23;
-            this.table.Size = new System.Drawing.Size(366, 436);
+            this.table.Size = new System.Drawing.Size(1134, 306);
             this.table.TabIndex = 17;
-            this.table.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.table_CellContentClick);
             // 
             // generate_table
             // 
@@ -230,11 +229,11 @@
             // 
             // tabControl1
             // 
-            this.tabControl1.Location = new System.Drawing.Point(384, 12);
+            this.tabControl1.Location = new System.Drawing.Point(356, 12);
             this.tabControl1.MinimumSize = new System.Drawing.Size(800, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(800, 770);
+            this.tabControl1.Size = new System.Drawing.Size(800, 261);
             this.tabControl1.TabIndex = 19;
             // 
             // button1
@@ -294,42 +293,48 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click_2);
             // 
-            // Column1
+            // Name
             // 
-            this.Column1.HeaderText = "Name";
-            this.Column1.Name = "Column1";
+            this.Name.HeaderText = "Name";
+            this.Name.Name = "Name";
+            this.Name.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
-            // Column2
+            // Index
             // 
-            this.Column2.HeaderText = "Index";
-            this.Column2.Name = "Column2";
-            this.Column2.Width = 50;
+            this.Index.HeaderText = "Index";
+            this.Index.Name = "Index";
+            this.Index.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Index.Width = 50;
             // 
-            // Column3
+            // value
             // 
-            this.Column3.HeaderText = "value";
-            this.Column3.Name = "Column3";
+            this.value.HeaderText = "value";
+            this.value.Name = "value";
+            this.value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // volume
             // 
             this.volume.HeaderText = "Volume";
             this.volume.Name = "volume";
+            this.volume.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
-            // Column5
+            // DoseBefore
             // 
-            this.Column5.HeaderText = "Dosed Before/ Layer Name";
-            this.Column5.Name = "Column5";
+            this.DoseBefore.HeaderText = "Dosed Before/ Layer Name";
+            this.DoseBefore.Name = "DoseBefore";
+            this.DoseBefore.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
-            // Column6
+            // DoseAfter
             // 
-            this.Column6.HeaderText = "Dosed After";
-            this.Column6.Name = "Column6";
+            this.DoseAfter.HeaderText = "Dosed After";
+            this.DoseAfter.Name = "DoseAfter";
+            this.DoseAfter.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // Excel_Gen
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1188, 753);
+            this.ClientSize = new System.Drawing.Size(1158, 607);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.api_count_box);
             this.Controls.Add(this.label2);
@@ -354,7 +359,6 @@
             this.Controls.Add(this.layer);
             this.Controls.Add(this.time_point);
             this.Controls.Add(this.project_id);
-            this.Name = "Excel_Gen";
             this.Text = "Excel Gen";
             this.Load += new System.EventHandler(this.Excel_Gen_Load);
             ((System.ComponentModel.ISupportInitialize)(this.table)).EndInit();
@@ -389,12 +393,12 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox api_count_box;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Name;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Index;
+        private System.Windows.Forms.DataGridViewTextBoxColumn value;
         private System.Windows.Forms.DataGridViewTextBoxColumn volume;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DoseBefore;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DoseAfter;
     }
 }
 

@@ -34,6 +34,7 @@ namespace WindowsFormsApplication1
         public Dictionary<string, Dictionary<string, Dictionary<string, List<string>>>> summary_dict;
         public List<string> table_header_global;
         public Dictionary<string, string> layer_real_name;
+        public List<List<bool>> read_only_settings;
         public Excel_Gen()
         {
             InitializeComponent();
@@ -83,25 +84,30 @@ namespace WindowsFormsApplication1
             int count;
             this.table.Rows.Clear();
             this.table.Refresh();
+            read_only_settings = new List<List< bool>>();
             count = Int32.Parse(this.compound.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
                 this.table.Rows.Add("Compound" + i.ToString(), i, i, 1, 0, 0);
+                read_only_settings.Add(new List<bool> { true, true, false, true, true, true });
             }
             count = Int32.Parse(this.time_point.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
                 this.table.Rows.Add("Time Point" + i.ToString(), i, i * 2, 1, 0, 0);
+                read_only_settings.Add(new List<bool> { true, true, false, false, true, true });
             }
             count = Int32.Parse(this.layer.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
                 this.table.Rows.Add("Layer" + i.ToString(), i, "L", 1, 0, 0);
+                read_only_settings.Add(new List<bool> { true, true, false, false, false, true });
             }
             count = Int32.Parse(this.formulation.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
                 this.table.Rows.Add("Formulation" + i.ToString(), i, i, 1, 0, 0);
+                read_only_settings.Add(new List<bool> { true, true, false, true, false, false });
             }
             count = Int32.Parse(this.api_count_box.Text.ToString());
             for (int i = 1; i <= count; i++)
@@ -109,11 +115,34 @@ namespace WindowsFormsApplication1
                 this.table.Rows.Add("API_" + i.ToString(), i, i, 1, 0, 0);
             }
             this.table.Rows.Add("Project ID", project_id.Text.ToString());
-            this.table.Rows.Add("replica", replica.Text.ToString());
+            this.table.Rows.Add("replicates", replica.Text.ToString());
             this.table.Rows.Add("study_type", get_study_type());
             this.table.Rows.Add("api", api_count_box.Text.ToString());
+            set_read_only();
 
         }
+        private void set_read_only()
+        {
+            for(int i=0; i< read_only_settings.Count; i++)
+            {
+                List<bool> row_setting = read_only_settings[i];
+                this.table.Rows[i ].Cells["Name"].ReadOnly = row_setting[0];
+                this.table.Rows[i].Cells["Name"].Style.BackColor = row_setting[0] ? Color.FromArgb(191, 191, 191) : Color.FromArgb(255,255,255);
+                this.table.Rows[i ].Cells["Index"].ReadOnly = row_setting[1];
+                this.table.Rows[i].Cells["Index"].Style.BackColor = row_setting[1] ? Color.FromArgb(191, 191, 191) : Color.FromArgb(255,255,255);
+                this.table.Rows[i ].Cells["value"].ReadOnly = row_setting[2];
+                this.table.Rows[i].Cells["value"].Style.BackColor = row_setting[2] ? Color.FromArgb(191, 191, 191) : Color.FromArgb(255,255,255);
+                this.table.Rows[i ].Cells["volume"].ReadOnly = row_setting[3];
+                this.table.Rows[i].Cells["volume"].Style.BackColor = row_setting[3] ? Color.FromArgb(191, 191, 191) : Color.FromArgb(255,255,255);
+                this.table.Rows[i ].Cells["DoseBefore"].ReadOnly = row_setting[4];
+                this.table.Rows[i].Cells["DoseBefore"].Style.BackColor = row_setting[4] ? Color.FromArgb(191, 191, 191) : Color.FromArgb(255,255,255);
+                this.table.Rows[i ].Cells["DoseAfter"].ReadOnly = row_setting[5];
+                this.table.Rows[i].Cells["DoseAfter"].Style.BackColor = row_setting[5] ? Color.FromArgb(191, 191, 191) : Color.FromArgb(255,255,255);
+
+            }
+
+        }
+
 
         private DataGridView create_new_table_template(Dictionary<string, string> compound_dict)
         {
@@ -905,16 +934,7 @@ namespace WindowsFormsApplication1
         {
 
         }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void table_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
+        
 
         private void replica_TextChanged(object sender, EventArgs e)
         {
@@ -1398,6 +1418,11 @@ namespace WindowsFormsApplication1
                 Clipboard.Clear();
                 GC.Collect();
             }
+        }
+
+        private void table_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }
