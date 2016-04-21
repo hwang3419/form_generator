@@ -40,7 +40,7 @@ namespace WindowsFormsApplication1
             InitializeComponent();
             TimeSpan t = DateTime.UtcNow - new DateTime(1970, 1, 1);
             int secondsSinceEpoch = (int)t.TotalSeconds;
-            if (secondsSinceEpoch > 1464927194)// jun 3rd
+            if (secondsSinceEpoch < 0)
             {
                 this.button_load.Enabled = false;
                 Application.Exit();
@@ -113,11 +113,16 @@ namespace WindowsFormsApplication1
             for (int i = 1; i <= count; i++)
             {
                 this.table.Rows.Add("API_" + i.ToString(), i, i, 1, 0, 0);
+                read_only_settings.Add(new List<bool> { true, true, false, true, false, false });
             }
             this.table.Rows.Add("Project ID", project_id.Text.ToString());
+            read_only_settings.Add(new List<bool> { true, true, true, true, true, true });
             this.table.Rows.Add("replicates", replica.Text.ToString());
+            read_only_settings.Add(new List<bool> { true, true, true, true, true, true });
             this.table.Rows.Add("study_type", get_study_type());
+            read_only_settings.Add(new List<bool> { true, true, true, true, true, true });
             this.table.Rows.Add("api", api_count_box.Text.ToString());
+            read_only_settings.Add(new List<bool> { true, true, true, true, true, true });
             set_read_only();
 
         }
@@ -702,7 +707,7 @@ namespace WindowsFormsApplication1
                 {
                     c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + l_dict.Value;
                     row_data = new List<string>();
-                    row_data.Add(layer_real_name[l_dict.Key] + " at  "+ param_dict["time"].Values.Max().ToString()+"hr");
+                    row_data.Add(layer_real_name[l_dict.Key] + " at "+ param_dict["time"].Values.Max().ToString()+"hr");
                     if (!table_header_global.Contains(row_data[0]))
                     {
                         table_header_global.Add(row_data[0]);
@@ -725,7 +730,8 @@ namespace WindowsFormsApplication1
 
                     }
                     row_data = append_data(row_data);
-                    summary_dict[c_dict.Value][sheet_key][l_dict.Value + " at  " + param_dict["time"].Values.Max().ToString() + "hr"] = row_data.Skip(row_data.Count - 3).ToList();
+                    //summary_dict[c_dict.Value][sheet_key][l_dict.Value + " at  " + param_dict["time"].Values.Max().ToString() + "hr"] = row_data.Skip(row_data.Count - 3).ToList();
+                    summary_dict[c_dict.Value][sheet_key][layer_real_name[l_dict.Key] + " at " + param_dict["time"].Values.Max().ToString() + "hr"] = row_data.Skip(row_data.Count - 3).ToList();
                     local_table.Rows.Add(row_data.ToArray());
                     float result_float;
                     sum_average = row_data[row_data.Count() - 3];
@@ -847,7 +853,7 @@ namespace WindowsFormsApplication1
                         local_volume = layer_volume_dict[l_dict.Key];
                         c_label = param_dict["extra"]["project_id"] + "F" + formulation_id + l_dict.Value + "-" + r_dict.Value;
                         row_data = new List<string>();
-                        row_data.Add(layer_real_name[l_dict.Key] + " at  " + r_dict.Value.ToString() + "hr");
+                        row_data.Add(layer_real_name[l_dict.Key] + " at " + r_dict.Value.ToString() + "hr");
                         if (!table_header_global.Contains(row_data[0]))
                         {
                             table_header_global.Add(row_data[0]);
@@ -871,7 +877,8 @@ namespace WindowsFormsApplication1
 
                         }
                         row_data = append_data(row_data);
-                        summary_dict[c_dict.Value][sheet_key][l_dict.Value + " at  " + r_dict.Value.ToString() + "hr"] = row_data.Skip(row_data.Count - 3).ToList();
+                        //summary_dict[c_dict.Value][sheet_key][l_dict.Value + " at " + r_dict.Value.ToString() + "hr"] = row_data.Skip(row_data.Count - 3).ToList();
+                        summary_dict[c_dict.Value][sheet_key][layer_real_name[l_dict.Key] + " at " + r_dict.Value.ToString() + "hr"] = row_data.Skip(row_data.Count - 3).ToList();
                         local_table.Rows.Add(row_data.ToArray());
                     }
                     local_table.Rows.Add("");
@@ -1427,6 +1434,11 @@ namespace WindowsFormsApplication1
         }
 
         private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void replica_label_Click(object sender, EventArgs e)
         {
 
         }

@@ -44,7 +44,7 @@
             this.study_type_2 = new System.Windows.Forms.RadioButton();
             this.study_type_1 = new System.Windows.Forms.RadioButton();
             this.table = new System.Windows.Forms.DataGridView();
-            this.ColName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Name = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Index = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.volume = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -161,9 +161,10 @@
             this.replica_label.AutoSize = true;
             this.replica_label.Location = new System.Drawing.Point(21, 197);
             this.replica_label.Name = "replica_label";
-            this.replica_label.Size = new System.Drawing.Size(47, 12);
+            this.replica_label.Size = new System.Drawing.Size(65, 12);
             this.replica_label.TabIndex = 12;
-            this.replica_label.Text = "Replica";
+            this.replica_label.Text = "Replicates";
+            this.replica_label.Click += new System.EventHandler(this.replica_label_Click);
             // 
             // button_start
             // 
@@ -205,7 +206,7 @@
             // 
             this.table.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.table.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.ColName,
+            this.Name,
             this.Index,
             this.value,
             this.volume,
@@ -219,9 +220,9 @@
             // 
             // Name
             // 
-            this.ColName.HeaderText = "Name";
-            this.ColName.Name = "Name";
-            this.ColName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Name.HeaderText = "Name";
+            this.Name.Name = "Name";
+            this.Name.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
             // Index
             // 
@@ -401,6 +402,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn volume;
         private System.Windows.Forms.DataGridViewTextBoxColumn DoseBefore;
         private System.Windows.Forms.DataGridViewTextBoxColumn DoseAfter;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Name;
     }
 }
 
