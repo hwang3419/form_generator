@@ -88,31 +88,31 @@ namespace WindowsFormsApplication1
             count = Int32.Parse(this.compound.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Compound" + i.ToString(), i, i, 1, 0, 0);
+                this.table.Rows.Add("Compound" + i.ToString(), i, i, 0, 0, 0);
                 read_only_settings.Add(new List<bool> { true, true, false, true, true, true });
             }
             count = Int32.Parse(this.time_point.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Time Point" + i.ToString(), i, i * 2, 1, 0, 0);
+                this.table.Rows.Add("Time Point" + i.ToString(), i, i * 0, 0, 0, 0);
                 read_only_settings.Add(new List<bool> { true, true, false, false, true, true });
             }
             count = Int32.Parse(this.layer.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Layer" + i.ToString(), i, "L", 1, 0, 0);
+                this.table.Rows.Add("Layer" + i.ToString(), i, "L", 0, 0, 0);
                 read_only_settings.Add(new List<bool> { true, true, false, false, false, true });
             }
             count = Int32.Parse(this.formulation.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("Formulation" + i.ToString(), i, i, 1, 0, 0);
+                this.table.Rows.Add("Formulation" + i.ToString(), i, i, 0, 0, 0);
                 read_only_settings.Add(new List<bool> { true, true, false, true, false, false });
             }
             count = Int32.Parse(this.api_count_box.Text.ToString());
             for (int i = 1; i <= count; i++)
             {
-                this.table.Rows.Add("API_" + i.ToString(), i, i, 1, 0, 0);
+                this.table.Rows.Add("API_" + i.ToString(), i, i, 0, 0, 0);
                 read_only_settings.Add(new List<bool> { true, true, false, true, false, false });
             }
             this.table.Rows.Add("Project ID", project_id.Text.ToString());
@@ -953,6 +953,7 @@ namespace WindowsFormsApplication1
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "Excel Documents (*.xls)|*.xls";
             sfd.FileName = "report.xls";
+            
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 // Copy DataGridView results to clipboard
@@ -1020,6 +1021,7 @@ namespace WindowsFormsApplication1
 
                 // Save the excel file under the captured location from the SaveFileDialog
                 xlWorkBook.SaveAs(sfd.FileName, Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
+                xlWorkBook.SaveAs(sfd.FileName.Replace(".xls","_backup.xls"), Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
                 xlexcel.DisplayAlerts = true;
                 xlWorkBook.Close(false, misValue, misValue);
                 xlexcel.Quit();

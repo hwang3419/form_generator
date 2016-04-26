@@ -361,7 +361,6 @@
             this.Controls.Add(this.layer);
             this.Controls.Add(this.time_point);
             this.Controls.Add(this.project_id);
-            this.Name = "Excel_Gen";
             this.Text = "Excel Gen";
             this.Load += new System.EventHandler(this.Excel_Gen_Load);
             ((System.ComponentModel.ISupportInitialize)(this.table)).EndInit();
