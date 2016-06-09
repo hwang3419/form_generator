@@ -417,7 +417,7 @@ namespace WindowsFormsApplication1
             new_table.Width = 700;
             int replica_int = Int32.Parse(param_dict["extra"]["replica"]);
             int api_int = Int32.Parse(param_dict["extra"]["api"]);
-            int[] column_count =  {1 + replica_int + 4 + api_int, param_dict["formulation"].Count+2 };
+            int[] column_count =  {1+param_dict["compound"].Count*(param_dict["time"].Count+param_dict["layer"].Count), param_dict["formulation"].Count+2,20 };
             new_table.ColumnCount = column_count.Max();
             new_table.Columns[0].Name = " ";
             new_table.Columns[0].Width = 200;
